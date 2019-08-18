@@ -1,14 +1,12 @@
 import spacy
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+import datetime
+# import numpy as np
+# import matplotlib.pyplot as plt
 # from spacy import displacy
 
 
-
-
-
-def create_data(paths):
+def create_data(paths, create_file):
     '''
     Load a list of document paths;
     Returns an inverted index to graph from
@@ -17,39 +15,66 @@ def create_data(paths):
     inv_index = pd.DataFrame(columns=['document', 'token', 'POS'])
     # load model
     nlp = spacy.load("en_core_web_sm")
-    n = 0
+    # Create output file
+    if (create_file):
+        now = datetime.datetime.now()
+        ymdhms = str(now.year)+'_' + \
+            str(now.month)+'_' + \
+            str(now.day)+'_' + \
+            str(now.hour)+'_' + \
+            str(now.minute)+'_' + \
+            str(now.second)+'_'
+        filename = ymdhms+str(len(paths))+'.csv'
+        fileout = open(filename, 'w')
     # Begin reading corpora
+    n = 0
     for path in paths:
         # Input
-        text = open(path, 'r')
-        text = text.read()
-        # NLP
-        doc = nlp(text)
-        # Build Index
-        for token in doc:
-            inv_index.loc[n] = [path, token.text.lower(), token.pos_]
-            n = n + 1
+        with open(path, 'r') as text:
+            text = text.read()
+            # NLP
+            doc = nlp(text)
+            # Build Index
+            for token in doc:
+                inv_index.loc[n] = [path, token.text.lower(), token.pos_]
+                if (create_file):
+                    fileout.writelines(path + ',' +
+                                       token.text.lower() + ',' +
+                                       token.pos_)
+                    n = n + 1
+    fileout.close()
     return inv_index
 
 
-def inv_index_token(DataFrame):
-    ''' Returns  inv index for tokens '''
+def inv_index_token(df):
+    '''
+    Input from create_data()
+    Returns  inv index for tokens '''
     df_II_c = df.groupby('document')\
-         .token.value_counts()\
-         .to_frame()\
-         .rename(columns={'token':'count'})
+                .token.value_counts()\
+                      .to_frame()\
+                      .rename(columns={'token': 'count'})
 
     return df_II_c
 
 
-def inv_index_POS(DataFrame):
-    ''' Returns  inv index for  POS'''
+def inv_index_POS(df):
+    '''
+    Input from create_data()
+    Returns  inv index for  POS'''
     df_II_c = df.groupby('document')\
                 .POS.value_counts()\
                     .to_frame()\
                     .rename(columns={'POS': 'count'})
 
     return df_II_c
+
+
+def remove_stopwords(df):
+    '''not finished'''
+    nlp = spacy.load("en_core_web_sm")
+   # stopindex = [nlp(df['token'][i])[0].is_stop for i in range(len(df['token']))]
+
 
 
 def plot_nlargest(series, n, index_level):

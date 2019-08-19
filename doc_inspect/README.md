@@ -12,7 +12,7 @@ ipython: run doc_inspect.py
 >tokplot = plot_nlargest(tok['count'])
 >plt.show()
 
-![Top 50 Tokens in Call of the Wild](https://raw.githubusercontent.com/mpk3/Natural-Language-Processing/master/doc_inspect/Top50CofW.png)
+![Top 50 Tokens in Call of the Wild](doc_inspect/Top50CofW.png)
 
 
 

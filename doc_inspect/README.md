@@ -16,13 +16,13 @@ ipython: run doc_inspect.py
 ![Top 50 Tokens in Call of the Wild](Top50CofW.png)
 
 
-```python
-ipython: run doc_inspect.py
-> df = create_data(path-to-filein) 
-> df_tok_c = inv_index_token(df)
-> df_pos_c = inv_index_POS(df)
+[//]:```python
+[//]:<>ipython: run doc_inspect.py
+[//]:> df = create_data(path-to-filein) 
+[//]:> df_tok_c = inv_index_token(df)
+[//]:> df_pos_c = inv_index_POS(df)
 
->tokplot = plot_nlargest(df_tok_c['count'], 5, 0)
->posplot = plot_nlargest(df_pos_c['count'], 5, 0)
->plt.show()
-```
+[//]:>tokplot = plot_nlargest(df_tok_c['count'], 5, 0)
+[//]:>posplot = plot_nlargest(df_pos_c['count'], 5, 0)
+[//]:>plt.show()
+[//]:```

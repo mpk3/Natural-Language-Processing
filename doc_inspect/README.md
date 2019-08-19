@@ -11,11 +11,12 @@ ipython: run doc_inspect.py
 >df, tok, pos = standard_make(['test_data/CofW.txt'])
 >tokplot = plot_nlargest(tok['count'])
 >plt.show()
+```
 
 ![Top 50 Tokens in Call of the Wild](Top50CofW.png)
 
 
-
+```python
 ipython: run doc_inspect.py
 > df = create_data(path-to-filein) 
 > df_tok_c = inv_index_token(df)

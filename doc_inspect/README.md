@@ -4,7 +4,7 @@ Simple script I wrote to look at some features of corpora including token and PO
 The create_data() function can be a little slow. This should really only be used for single documents until I create a more robust version maybe leveraging matrix operations. Also, this current version does not offer any current token filters, aka stopwords have not been removed. I will look at adding function to fix this.
 
 #### Example:<h2>
-- Comes from inspecting Jack London's 'Call of the Wild' and a translated copy of Goethe's 'Faust', both obtained through gutenberg
+- Comes from inspecting Jack London's 'Call of the Wild' obtained through [Gutenberg](https://www.gutenberg.org/ebooks/215)
 
 ```python
 ipython: run doc_inspect.py

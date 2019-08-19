@@ -6,11 +6,17 @@ import datetime
 # from spacy import displacy
 
 
-def create_data(paths, create_file):
-    '''
-    Load a list of document paths;
+def create_data(paths, create_file=False, stopwords=True):
+    """Load a list of document paths;
     Returns an inverted index to graph from
-    '''
+
+    Keyword Arguments:
+    paths -- list [] ; paths to corpus
+    create_file -- Boolean; Creates timestamped csv for future use;\
+                   default=False
+    stop_words  -- Boolean; True removes stopwords as index is built;\
+                   default=True
+    """
     # Inverted Index
     inv_index = pd.DataFrame(columns=['document', 'token', 'POS'])
     # load model
@@ -36,12 +42,25 @@ def create_data(paths, create_file):
             doc = nlp(text)
             # Build Index
             for token in doc:
-                inv_index.loc[n] = [path, token.text.lower(), token.pos_]
-                if (create_file):
-                    fileout.writelines(path + ',' +
-                                       token.text.lower() + ',' +
-                                       token.pos_)
+                if (stopwords):
+                    if (token.is_stop):
+                        next
+                    else:
+                        inv_index.loc[n] = [path,
+                                            token.text.lower(),
+                                            token.pos_]
+                        n = n + 1
+                        if (create_file):
+                            fileout.writelines(path + ',' +
+                                               token.text.lower() + ',' +
+                                               token.pos_)
+                else:
+                    inv_index.loc[n] = [path, token.text.lower(), token.pos_]
                     n = n + 1
+                    if (create_file):
+                        fileout.writelines(path + ',' +
+                                           token.text.lower() + ',' +
+                                           token.pos_)
     fileout.close()
     return inv_index
 
@@ -69,13 +88,16 @@ def inv_index_POS(df):
 
     return df_II_c
 
-
+'''
 def remove_stopwords(df):
-    '''not finished'''
-    nlp = spacy.load("en_core_web_sm")
-   # stopindex = [nlp(df['token'][i])[0].is_stop for i in range(len(df['token']))]
-
-
+   # not finished
+    # nlp = spacy.load("en_core_web_sm")
+    stopwords = spacy.lang.en.stop_words.STOP_WORDS
+    # nlp.stop_words.STOP_WORDS
+    df_no_stops = df[~df[
+    # stopindex = [nlp(df['token'][i])[0].is_stop for i in range(len(df['token']))]
+    
+'''
 
 def plot_nlargest(series, n, index_level):
     '''

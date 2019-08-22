@@ -1,5 +1,5 @@
 import spacy
-import Counter
+from collections import Counter
 
 class Inspector():
     """This is a class for holding the basic data created when
@@ -67,13 +67,11 @@ class Inspector():
             all_tok.append(tokens)
         self.tokens = all_tok
 
+    #def create_counts(self):
+    #    self.counts = 
 
-def create_counts(self):
-    self.counts = Counter(self.tokens)
-
-
-def most_common(self, n=5):
-    return self.counts.most_common(n)
+   # def most_common(self, n=5):
+    #    return self.counts.most_common(n)
 
 
 def main():

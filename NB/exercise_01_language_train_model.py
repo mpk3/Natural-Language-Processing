@@ -17,7 +17,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.datasets import load_files
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
-
+from joblib import dump
 
 # The training data folder must be passed as first argument
 languages_data_folder = 'data/languages/paragraphs'  # sys.argv[1]
@@ -30,8 +30,11 @@ docs_train, docs_test, y_train, y_test = train_test_split(
 
 # TASK: Build a vectorizer that splits strings into sequence of 1 to 3
 # characters instead of word tokens
+# Originally I did not include the use_idf parameters
+# It came from the solution so I decided to compare the two
 params = {'analyzer': 'char_wb',
-          'ngram_range': (1, 3)}
+          'ngram_range': (1, 3),
+          'use_idf': False}
 char_vect = TfidfVectorizer(params)
 # TASK: Build a vectorizer / classifier pipeline using the previous analyzer
 # the pipeline instance should stored in a variable named clf
@@ -66,3 +69,5 @@ predicted = clf.predict(sentences)
 
 for s, p in zip(sentences, predicted):
     print('The language of "%s" is "%s"' % (s, dataset.target_names[p]))
+
+dump(clf, 'results/lang_clf.joblib')

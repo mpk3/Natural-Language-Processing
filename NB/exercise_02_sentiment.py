@@ -19,10 +19,10 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.datasets import load_files
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
-
+from joblib import dump, load
 
 if __name__ == "__main__":
-    # NOTE: we put the following in a 'if __name__ == "__main__"' protected
+    # NOTE: we put the following in a 'if __name__ == "__mian__"' protected
     # block to be able to use a multi-core grid search that also works under
     # Windows, see: http://docs.python.org/library/multiprocessing.html#windows
     # The multiprocessing module is used as the backend of joblib.Parallel
@@ -78,3 +78,6 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     plt.matshow(cm)
     plt.show()
+
+    dump(gs_clf, 'results/sent_clf.joblib')
+    

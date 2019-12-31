@@ -123,9 +123,9 @@ class Tagger():
         Creates: self.raw_text
         Creates: self.article_name
         '''
-        file_in = open(fin, 'r')
-        doc_string = file_in.readlines()
-        return
+        self.raw_text = open(fin, 'r').read()
+        self.article_name =\
+            fin.split('train-articles')[1].split('e')[1].split('.')[0]
 
     def create_token_spans(self):
         '''This function creates a list of token spans from raw_text. The token
@@ -279,9 +279,14 @@ out_str = MODEL_DIR + '/span_dict.pickle'
 extractor.pickle_dump(extractor.span_dict, out_str)
 test_extractor = Tagger()
 test_extractor.load_span_dict(out_str)
-assert extractor.span_dict == test_extractor.span_dict, 'Load 1'
-assert test_array == test_extractor.span_dict['999001970'], 'Load 2'
+assert extractor.span_dict == test_extractor.span_dict, 'Load Span Dict 1'
+assert test_array == test_extractor.span_dict['999001970'], 'Load Span Dict 2'
 
-
-extractor.clear()
-assert len(extractor.span_dict.keys()) is 0, 'Clear 1'
+# Load article tests
+article = '/home/mpk3/Natural_Language_Processing/semeval_11_2020'\
+    + '/provided/datasets/train-articles/article701225819.txt'
+extractor = Tagger()
+extractor.load_span_dict(out_str)
+extractor.load_article(article)
+assert extractor.article_name == '701225819', 'Load article 1'
+assert len(extractor.raw_text) == 6254

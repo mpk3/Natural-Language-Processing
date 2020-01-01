@@ -33,8 +33,8 @@ class Tagger():
     def __init__(self):
 
         # Models
-        self.token_tagger = None  # Currently twt
-        self.pos_tagger = None  # Currently nltk default
+        self.tokenizer = None  # Currently twt
+        # self.pos_tagger = None  # Currently nltk default
         self.sent_tagger = None  # Currently punkt
         self.fasttext = None  # HUGE
 
@@ -57,8 +57,8 @@ class Tagger():
         # List of lists of spans corresponding to sentences
         self.unflat_sent = []
 
-        # List of actual tokenized sentences
-        self.tokens = []
+        # List of lists of tokens for each sentence
+        self.tokenized_sentences = []
 
         # POS tags for correspoding tokens
         self.tags = []
@@ -80,7 +80,7 @@ class Tagger():
         self.sent_spans = []
         self.unflat_sent = []
         self.tags = []
-        self.tokens = []
+        self.tokenized_sentences = []
         self.trigrams = []
         self.pos_trigrams = []
 
@@ -149,7 +149,10 @@ class Tagger():
         self.sent_spans = list(self.sent_tagger.span_tokenize(self.raw_text))
 
     def create_sent_lists(self):
-        '''Creates an array object where each row is a list of numbers
+        '''
+        DEPRECATED! NOT IN USE!
+
+        Creates an array object where each row is a list of numbers
         corresponding to the tokens in each sentence. This is needed for both
         CRF/Sequence taggers and the pos_tagger which takes a list of tokens as
         its input. This function is not looking at the char level indeces of
@@ -172,31 +175,31 @@ class Tagger():
     def create_token_list(self):
         '''Unflattened 3-D token lists.
 
-        self.tokens = [[tokenized_sentence]]
+        self.tokenized_sentences = [[tokenized_sentence]]
         '''
 
-        for sent in self.unflat_sent:
+        for span in self.sent_spans:
             sentence = []
-            for tok_index in sent:
-                sentence.append(self.token_spans[tok_index])
-                token_lists.append(sentence)
-            self.tokens.append(sentence)
+            sent_range = set(range(span[0], span[1]))
+            for token_span in self.token_spans:
+                if token_span[0] in sent_range:
+                    token = self.raw_text[token_span[0]:token_span[1]]
+                    sentence.append(token)
+            self.tokenized_sentences.append(sentence)
 
     def pos_tag(self):
         '''Tags tokens using indices from token_spans and sent_spans
         to get strings from text_raw
-        Requires: self.tokens
+        Requires: self.tokenized_sentences
         Creates: self.tags
         '''
-        if self.pos_tagger is None:
-            self.pos_tagger = pos_tag()
-        for sentence in self.tokens:
+        for sentence in self.tokenized_sentences:
             tag_tuples = pos_tag(sentence)
             just_tags = [tup[1] for tup in tag_tuples]
             self.tags.append(just_tags)
 
-    def generate_trigram(array):
-        end = len(array) - 1
+    def generate_trigram(self, array):
+        ''' Creates a trigram array out of any array passed to it'''
         output = []
         i = 0
         while (i < len(array)):
@@ -212,18 +215,18 @@ class Tagger():
             i = i + 1
         return output
 
-    def trigrams(self):
+    def create_token_trigrams(self):
         '''Creates token trigram array
         The tuple values are tokens and not indices
         self.trigrams = [[(n-1, n+1),...][(n-1, n+1)]]
         '''
-        self.trigrams = [generate_trigram(tokenized_sentence)
-                         for tokenized_sentence in self.tokens]
+        self.trigrams = [self.generate_trigram(tokenized_sentence)
+                         for tokenized_sentence in self.tokenized_sentences]
 
-    def pos_trigrams(self):
+    def create_pos_trigrams(self):
         '''Same as trigram but for POS tags'''
-        self.pos_trigrams = [generate_trigram(pos_tag_sentence)
-                             for pos_tag_sentence in self.pos_tags]
+        self.pos_trigrams = [self.generate_trigram(pos_tag_sentence)
+                             for pos_tag_sentence in self.tags]
        
 
 """Driver"""
@@ -290,3 +293,25 @@ extractor.load_span_dict(out_str)
 extractor.load_article(article)
 assert extractor.article_name == '701225819', 'Load article 1'
 assert len(extractor.raw_text) == 6254
+
+# Tagger tests
+extractor = Tagger()
+extractor.load_span_dict(out_str)
+extractor.load_article(article)
+extractor.create_sent_spans()
+extractor.create_token_spans()
+extractor.create_token_list()
+assert len(extractor.tokenized_sentences) ==\
+    len(extractor.sent_spans), 'Sen span 1'
+
+extractor.pos_tag()
+assert len(extractor.tokenized_sentences) ==\
+    len(extractor.tags), 'Pos Tag 1'
+
+# Trigram test
+test = ['0', '1', '2']
+test_result = [('SEN_START', '1'), ('0', '2'), ('1', 'SEN_END')]
+assert extractor.generate_trigram(test) ==\
+    test_result, 'Trigram 1'
+extractor.create_token_trigrams()
+extractor.create_pos_trigrams()

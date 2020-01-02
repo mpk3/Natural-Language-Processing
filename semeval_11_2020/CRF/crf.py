@@ -9,9 +9,9 @@ import pickle
 import glob
 from sklearn.model_selection import train_test_split
 
+LAB_DAT = '/home/mpk3/Natural_Language_Processing' + \
+    '/semeval_11_2020/labeled_data'
 
-# f = '/home/mpk3/School/MS_Final_Project/project/results/2tpe300.txt'
-# f = '/home/mpk3/School/MS_Final_Project/project/results/trial_1/xab'
 
 def generate_baseline(y_test):
     baseline = []
@@ -19,6 +19,8 @@ def generate_baseline(y_test):
         baseline.append(['o' for i in range(len(tag_list))])
     return baseline
 
+
+# Deprecated; Will be used later
 def flatten_sent_embedding(sent):
     for token_dict in sent:
         emb = token_dict.pop('embedding')
@@ -28,19 +30,20 @@ def flatten_sent_embedding(sent):
     return sent
 
 
-fin = '/home/mpk3/School/MS_Final_Project/project/results/trial_2/'
+TRIAL = '/trial1/'
+fin = LAB_DAT + TRIAL + "*.pickle"
 
-files = glob.glob(fin + "*.pickle")
-half = files[0:184]
+files = glob.glob(fin)
+amount = files  # files[0:184]
 X = []
 Y = []
 
 # files_test = files[0:3]
-for article in half:  # files_test:
+for article in amount:  # files_test:
     sentences = pickle.load(open(article, "rb"))
     for X_i in sentences:
-        Y_i = [y.pop('label') for y in X_i]
-        X_i = flatten_sent_embedding(X_i)
+        Y_i = [y.pop('class') for y in X_i]
+        #X_i = flatten_sent_embedding(X_i)
         X.append(X_i)
         Y.append(Y_i)
 
@@ -55,8 +58,20 @@ del Y
 
 crf = sklearn_crfsuite.CRF(
     algorithm='lbfgs',
-    max_iterations=50,
-    all_possible_transitions=True)
+    max_iterations=100,
+    all_possible_transitions=True,
+    verbose=True)
+
+crf.fit(X_train, y_train)
+labels = list(crf.classes_)
+y_pred = crf.predict(X_test)
+metrics.flat_f1_score(y_test, y_pred,
+                      average='weighted', labels=labels)
+
+baseline = generate_baseline(y_pred)
+print(metrics.flat_classification_report(y_test, y_pred))
+print(metrics.flat_classification_report(y_test, baseline))
+
 
 
 params_space = {
@@ -77,13 +92,12 @@ rs = RandomizedSearchCV(crf, params_space,
 rs.fit(X_train, y_train)
 
 y_pred = rs.predict(X_test)
-baseline = generate_baseline(y_pred)
+
 metrics.flat_f1_score(y_test, y_pred, average='weighted')
 metrics.flat_f1_score(y_test, baseline, average='weighted')
 metrics.flat_accuracy_score(y_test, y_pred)
 metrics.flat_recall_score(y_test, y_pred)
-print(metrics.flat_classification_report(y_test, y_pred))
-print(metrics.flat_classification_report(y_test, baseline))
+
 
 #
 #

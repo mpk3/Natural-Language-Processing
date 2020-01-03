@@ -279,7 +279,9 @@ def create_feature_lists(fe):
                            'next_tok': fe.trigrams[i][j][1],
                            'prev_pos': fe.pos_trigrams[i][j][0],
                            'next_pos': fe.pos_trigrams[i][j][1],
-                           'class': fe.class_tags[i][j]}
+                           'class': fe.class_tags[i][j],
+                           'span': fe.token_spans[fe.unflat_sent[i][j]],
+                           'article': fe.article_name}
             feature_sentence.append(feature_map)
             j = j + 1
         sentence_feat_list.append(feature_sentence)

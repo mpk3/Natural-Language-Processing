@@ -20,6 +20,14 @@ def generate_baseline(y_test):
     return baseline
 
 
+def separate_spans(X):
+    X_span = []
+    for sentence in X:
+        spans = [feat_map.pop('span') for feat_map in sentence]
+        X_span.append(spans)
+    return X_span, X
+
+
 # Deprecated; Will be used later
 def flatten_sent_embedding(sent):
     for token_dict in sent:
@@ -53,8 +61,13 @@ X_train, X_test, y_train, y_test = train_test_split(X,
                                                     Y,
                                                     test_size=0.20,
                                                     random_state=42)
+train_spans, X_train = separate_spans(X_train)
+test_spans, X_test = separate_spans(X_test)
+
 del X
 del Y
+all_spans = train_spans + test_spans
+all_sent = X_train + X_test
 
 crf = sklearn_crfsuite.CRF(
     algorithm='lbfgs',
@@ -74,6 +87,10 @@ print(metrics.flat_classification_report(y_test, baseline))
 
 
 
+
+
+
+# From original v1 model; not done yet for v2
 params_space = {
     'c1': scipy.stats.expon(scale=0.5),
     'c2': scipy.stats.expon(scale=0.05),

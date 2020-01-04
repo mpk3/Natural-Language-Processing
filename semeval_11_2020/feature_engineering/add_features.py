@@ -40,17 +40,24 @@ class Retagger:
         self.sentence_sentiments = []
         self.token_level_sentiment = []
         self.article_name = ''
+        self.main_embed = []
+        self.prev_embed = []
+        self.next_embed = []
 
     def pickle_dump(self, obj, fout):
         pickle.dump(obj, open(fout, "wb"))
 
     def clear(self):
         ''' CLEAR !'''
+
         self.sentences = []
         self.tokenized_sentences = []
         self.sentence_sentiments = []
         self.token_level_sentiment = []
         self.article_name = ''
+        self.main_embed = []
+        self.prev_embed = []
+        self.next_embed = []
 
     def load_article_pickle(self, pickle_list):
         '''Loads the pickle file created for each article.

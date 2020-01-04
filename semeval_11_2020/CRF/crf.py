@@ -1,4 +1,6 @@
 import scipy.stats
+import numpy as np
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import make_scorer
 # from sklearn.cross_validation import cross_val_score
 from sklearn.model_selection import RandomizedSearchCV
@@ -27,9 +29,49 @@ def separate_spans(X):
         X_span.append(spans)
     return X_span, X
 
+def separate_articles(X):
+    X_articles = []
+    for sentence in X:
+        articles = [feat_map.pop('article') for feat_map in sentence]
+        X_articles.append(articles)
+    return X_articles, X
 
-# Deprecated; Will be used later
+def one_hot_encoder(feature_key, X):
+    '''Creates one hot encoding for whatever key is passed to it'''
+    j = set()
+    w = [[j.add(token[feature_key]) for token in sentence] for sentence in X]
+    one_hot = OneHotEncoder()
+    j = np.array(list(j)).reshape(-1, 1)
+    one_hot.fit(j)
+    return one_hot
+
+
+def encode(encoder_list, X):
+    '''Changes X so it is one_hot encoded'''
+
+    for sentence in X:
+        for feature_map in sentence:
+            for encoder in encoder_list:
+                enc = encoder[0]
+                key = encoder[1]
+                encodings = list(enc.transform([[feature_map[key]]])
+                                 .toarray()[0])
+                encodingdict = {str(ind): val
+                                for ind, val in enumerate(encodings)}
+
+                feature_map[key+'_emb'] = encodingdict
+        return X
+
+
+def remove_feature(key, X):
+    for sentence in X:
+        for feature_map in sentence:
+           z = feature_map.pop(key)
+    return X
+
+
 def flatten_sent_embedding(sent):
+    # Deprecated; Will be used later
     for token_dict in sent:
         emb = token_dict.pop('embedding')
         emb_list = list(enumerate(emb))
@@ -38,7 +80,10 @@ def flatten_sent_embedding(sent):
     return sent
 
 
-TRIAL = '/trial1/'
+
+
+# Trials
+TRIAL = '/trial2/'
 fin = LAB_DAT + TRIAL + "*.pickle"
 
 files = glob.glob(fin)
@@ -55,8 +100,20 @@ for article in amount:  # files_test:
         X.append(X_i)
         Y.append(Y_i)
 
+keys = set(X[0][0].keys())
+keys.remove('article')
+keys.remove('span')
+keys.remove('next_tok')
+keys.remove('prev_tok')
+#keys.remove('token')
+keys.remove('sentence_pos_or_neg')
+keys.remove('sentence_sentiment_score')
+keys.remove('prev_pos')
+keys.remove('next_pos')
+encoders = [(one_hot_encoder(key, X), key) for key in keys]
 
-
+X = encode(encoders, X)
+# X = encode()
 X_train, X_test, y_train, y_test = train_test_split(X,
                                                     Y,
                                                     test_size=0.20,
@@ -64,14 +121,27 @@ X_train, X_test, y_train, y_test = train_test_split(X,
 train_spans, X_train = separate_spans(X_train)
 test_spans, X_test = separate_spans(X_test)
 
-del X
-del Y
-all_spans = train_spans + test_spans
-all_sent = X_train + X_test
+train_articles, X_train = separate_articles(X_train)
+test_articles, X_test = separate_articles(X_test)
 
+X_train = remove_feature('sentence_pos_or_neg', X_train)
+X_train = remove_feature('sentence_sentiment_score', X_train)
+X_test = remove_feature('sentence_pos_or_neg', X_test)
+X_test = remove_feature('sentence_sentiment_score', X_test)
+X_train = encode(encoders, X_train)
+#X_train = remove_feature('token_pos_or_neg', X_train)
+#X_train = remove_feature('token_sentiment_score', X_train)
+#X_test = remove_feature('token_pos_or_neg', X_test)
+#X_test = remove_feature('token_sentiment_score', X_test)
+
+#del X
+#del Y
+#all_spans = train_spans + test_spans
+#all_sent = X_train + X_test
+#all_y = y_train + y_test
 crf = sklearn_crfsuite.CRF(
     algorithm='lbfgs',
-    max_iterations=100,
+    max_iterations=300,
     all_possible_transitions=True,
     verbose=True)
 
@@ -124,3 +194,19 @@ metrics.flat_recall_score(y_test, y_pred)
 
 crf = rs.best_estimator_
 y_pred = crf.predict(X_test)
+
+
+# Encoding Tests
+
+
+pos_one_hot = one_hot_encoder('pos', X)
+sentiment_one_hot = one_hot_encoder('token_pos_or_neg', X)
+token_one_hot = one_hot_encoder('token', X)
+
+#pos_one_hot = one_hot_encoder('pos', X)
+#sentiment_one_hot = one_hot_encoder('token_pos_or_neg', X)
+#token_one_hot = one_hot_encoder('token', X)
+#prev_tok_oh = one_hot_encoder)
+#encoders = [(pos_one_hot, 'pos'),
+#            (sentiment_one_hot, 'token_pos_or_neg'),
+#            (token_one_hot, 'token')]

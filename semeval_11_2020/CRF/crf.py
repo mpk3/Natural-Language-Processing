@@ -100,20 +100,6 @@ for article in amount:  # files_test:
         X.append(X_i)
         Y.append(Y_i)
 
-keys = set(X[0][0].keys())
-keys.remove('article')
-keys.remove('span')
-keys.remove('next_tok')
-keys.remove('prev_tok')
-#keys.remove('token')
-keys.remove('sentence_pos_or_neg')
-keys.remove('sentence_sentiment_score')
-keys.remove('prev_pos')
-keys.remove('next_pos')
-encoders = [(one_hot_encoder(key, X), key) for key in keys]
-
-X = encode(encoders, X)
-# X = encode()
 X_train, X_test, y_train, y_test = train_test_split(X,
                                                     Y,
                                                     test_size=0.20,
@@ -124,21 +110,27 @@ test_spans, X_test = separate_spans(X_test)
 train_articles, X_train = separate_articles(X_train)
 test_articles, X_test = separate_articles(X_test)
 
+
+# These features actually reduced accuracy. Confound with token sentiment info?
 X_train = remove_feature('sentence_pos_or_neg', X_train)
-X_train = remove_feature('sentence_sentiment_score', X_train)
+X_train = remove_feature('sentence_sentiment_score', X_train) 
 X_test = remove_feature('sentence_pos_or_neg', X_test)
 X_test = remove_feature('sentence_sentiment_score', X_test)
-X_train = encode(encoders, X_train)
-#X_train = remove_feature('token_pos_or_neg', X_train)
-#X_train = remove_feature('token_sentiment_score', X_train)
-#X_test = remove_feature('token_pos_or_neg', X_test)
-#X_test = remove_feature('token_sentiment_score', X_test)
 
-#del X
-#del Y
-#all_spans = train_spans + test_spans
-#all_sent = X_train + X_test
-#all_y = y_train + y_test
+# X_train = remove_feature('token', X_train)
+# X_test = remove_feature('token', X_test)
+# X_train = remove_feature('token_pos_or_neg', X_train)
+# X_train = remove_feature('token_sentiment_score', X_train)
+# X_test = remove_feature('token_pos_or_neg', X_test)
+# X_test = remove_feature('token_sentiment_score', X_test)
+
+# del X
+# del Y
+
+# all_spans = train_spans + test_spans
+# all_sent = X_train + X_test
+# all_y = y_train + y_test
+
 crf = sklearn_crfsuite.CRF(
     algorithm='lbfgs',
     max_iterations=300,
@@ -198,15 +190,28 @@ y_pred = crf.predict(X_test)
 
 # Encoding Tests
 
-
+'''
 pos_one_hot = one_hot_encoder('pos', X)
 sentiment_one_hot = one_hot_encoder('token_pos_or_neg', X)
 token_one_hot = one_hot_encoder('token', X)
+'''
 
-#pos_one_hot = one_hot_encoder('pos', X)
-#sentiment_one_hot = one_hot_encoder('token_pos_or_neg', X)
-#token_one_hot = one_hot_encoder('token', X)
-#prev_tok_oh = one_hot_encoder)
-#encoders = [(pos_one_hot, 'pos'),
-#            (sentiment_one_hot, 'token_pos_or_neg'),
-#            (token_one_hot, 'token')]
+##### Encoder Test Stuff
+'''
+keys = set(X[0][0].keys())
+keys.remove('article')
+keys.remove('span')
+keys.remove('next_tok')
+keys.remove('prev_tok')
+#keys.remove('token')
+keys.remove('sentence_pos_or_neg')
+keys.remove('sentence_sentiment_score')
+#keys.remove('token_pos_or_neg')
+keys.remove('token_sentiment_score')
+keys.remove('prev_pos')
+keys.remove('next_pos')
+#keys.remove('pos')
+encoders = [(one_hot_encoder(key, X), key) for key in keys]
+X_train = encode(encoders, X_train)
+X = encode(encoders, X)
+# X = encode() '''

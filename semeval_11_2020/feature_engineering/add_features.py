@@ -1,6 +1,7 @@
+from nltk.corpus import stopwords
 from flair.models import TextClassifier
 from flair.data import Sentence
-import gc
+# import gc
 import glob
 import pickle
 # import flair
@@ -33,6 +34,9 @@ class Retagger:
         # Models that dont get cleared
         self.embedding_model = None
         self.sentiment_model = None
+
+        # Stopwords
+        self.stopword_set = None
 
         # Cleared
         self.sentences = []
@@ -91,6 +95,50 @@ class Retagger:
             pos_or_neg = labels.value
             self.sentence_sentiments.append((pos_or_neg, score))
 
+    def retag_case_features(self):
+        'Adds case related features and makes the tokens all lowercase'
+        for sentence in self.sentences:
+            for feature_map in sentence:
+
+                # Main Token
+                feature_map['main_is_lower'] =\
+                    int(feature_map['token'].islower())
+                feature_map['token'] =\
+                    feature_map['token'].lower()
+
+                # Previous
+                feature_map['prev_is_lower'] =\
+                    int(feature_map['prev_tok'].islower())
+                feature_map['prev_tok'] =\
+                    feature_map['prev_tok'].lower()
+
+                # Next
+                feature_map['next_is_lower'] =\
+                    int(feature_map['next_tok'].islower())
+                feature_map['next_tok'] =\
+                    feature_map['next_tok'].lower()
+
+    def retag_stop_words(self):
+        '''Creates a stop word feature.
+        Tokens should be lowercase before going through this
+        '''
+        if self.stopword_set is None:
+            self.stopword_set = set(stopwords.words('english'))
+        for sentence in self.sentences:
+            for feature_map in sentence:
+
+                # Main Token
+                feature_map['main_is_stop'] =\
+                    int(feature_map['token'] in self.stopword_set)
+
+                # Previous
+                feature_map['prev_is_stop'] =\
+                    int(feature_map['prev_tok'] in self.stopword_set)
+
+                # Next
+                feature_map['next_is_stop'] =\
+                    int(feature_map['next_tok'] in self.stopword_set)
+
     def token_sentiment_analysis(self):
         '''Perform sentiment analysis on the tokenized sentences on
         each token
@@ -108,8 +156,17 @@ class Retagger:
                 sentence.append((pos_or_neg, score))
             self.token_level_sentiment.append(sentence)
 
+    def token_embeddings(self):
+        # if self.fasttext_model is None:
+        #    self.fasttext_model = fasttext.
+        return
+
     def retag_sentiment(self):
-        ''' Adds the new features to the json objects in self.sentences'''
+        ''' Adds the new features to the json objects in self.sentences
+        Sentence sentiment so far has actually had a negative impact on
+        classification. Frankly, I think the flair model is not ideal for this
+        task. I need a different kind of sentiment model or I need to finetune
+        the current one.'''
         i = 0
         for sent in self.sentences:
             j = 0
@@ -130,18 +187,28 @@ class Retagger:
 
 # Driver
 retag = Retagger()
-TRIAL = LAB_DATA + '/trial1/*'
-NEW_TRIAL = LAB_DATA + '/trial2/'
+TRIAL = LAB_DATA + '/trial2/*'
+NEW_TRIAL = LAB_DATA + '/trial3/'
 files = glob.glob(TRIAL)
 amount = files  # [files[0]]
 for f_in in amount:
-    retag.load_article_pickle(f_in)
-    retag.separate_tokens()
-    retag.sentence_sentiment_analysis()  # Holding off on this
-    retag.token_sentiment_analysis()
-    retag.retag_sentiment()
+    retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
+    retag.retag_case_features()  # ; retag.sentences[0][0]
+    retag.retag_stop_words()  # ; retag.sentences[0][0]
     fout = NEW_TRIAL + retag.article_name + '_f.pickle'
-    print(retag.article_name)
     retag.pickle_dump(retag.sentences, fout)
     retag.clear()
-    gc.collect()
+
+
+# This version was for sentiment analysis
+'''for f_in in amount:
+    # retag.separate_tokens() 
+    # retag.sentence_sentiment_analysis()  # Holding off on this
+    # retag.token_sentiment_analysis()
+    # retag.retag_sentiment()
+    fout = NEW_TRIAL + retag.article_name + '_f.pickle'
+    # print(retag.article_name)
+    retag.pickle_dump(retag.sentences, fout)
+    retag.clear()
+    # gc.collect()
+'''

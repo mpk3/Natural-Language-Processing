@@ -11,6 +11,7 @@ import pickle
 import glob
 from sklearn.model_selection import train_test_split
 
+
 LAB_DAT = '/home/mpk3/Natural_Language_Processing' + \
     '/semeval_11_2020/labeled_data'
 
@@ -29,6 +30,7 @@ def separate_spans(X):
         X_span.append(spans)
     return X_span, X
 
+
 def separate_articles(X):
     X_articles = []
     for sentence in X:
@@ -36,10 +38,14 @@ def separate_articles(X):
         X_articles.append(articles)
     return X_articles, X
 
+
 def one_hot_encoder(feature_key, X):
-    '''Creates one hot encoding for whatever key is passed to it'''
+    '''DEPRECATED
+    Creates one hot encoding for whatever key is passed to it'''
     j = set()
-    w = [[j.add(token[feature_key]) for token in sentence] for sentence in X]
+    x = [[j.add(token[feature_key]) for token in sentence]
+         for sentence in X]
+    del x
     one_hot = OneHotEncoder()
     j = np.array(list(j)).reshape(-1, 1)
     one_hot.fit(j)
@@ -64,13 +70,25 @@ def encode(encoder_list, X):
 
 
 def remove_feature(key, X):
+    '''Used to remove features in case I want to experiment with
+    with stuff'''
     for sentence in X:
         for feature_map in sentence:
-           z = feature_map.pop(key)
+            z = feature_map.pop(key)
+            del z  # This doesnt need to be done
     return X
 
 
 def flatten_sent_embedding(sent):
+    '''CRF suite has very particular requirements for the shape of
+    the data that you pass to it. This function flattens embeddings
+    and turns them into dictionaries.
+    
+    Not a lot of embeddings were used in this because it greatly 
+    increases the dimensionality of the features and presents memory
+    issues when working with the whole data set
+    
+    '''
     # Deprecated; Will be used later
     for token_dict in sent:
         emb = token_dict.pop('embedding')
@@ -80,25 +98,40 @@ def flatten_sent_embedding(sent):
     return sent
 
 
-
+def competition_output(f_out, y_pred, test_spans, test_articles):
+    with open(f_out, 'a+') as sub:
+        i = 0
+        for sentence in y_pred:
+            j = 0
+            article = test_articles[i][j]
+            for prediction in sentence:
+                if prediction is 'p':
+                    start = test_spans[i][j][0]
+                    fin = test_spans[i][j][0]
+                    line = article + '\t' + start + '\t' + fin
+                    sub.write(line + '\n')
+                j = j + 1
+            i = i + 1
 
 # Trials
-TRIAL = '/trial2/'
+TRIAL = '/trial6/'
 fin = LAB_DAT + TRIAL + "*.pickle"
 
 files = glob.glob(fin)
-amount = files  # files[0:184]
+amount = files  # files[]
 X = []
 Y = []
 
 # files_test = files[0:3]
 for article in amount:  # files_test:
     sentences = pickle.load(open(article, "rb"))
+    sentences = sentences[1:]  # Removes title
     for X_i in sentences:
         Y_i = [y.pop('class') for y in X_i]
         #X_i = flatten_sent_embedding(X_i)
         X.append(X_i)
         Y.append(Y_i)
+X[0][0]
 
 X_train, X_test, y_train, y_test = train_test_split(X,
                                                     Y,
@@ -112,16 +145,20 @@ test_articles, X_test = separate_articles(X_test)
 
 
 # These features actually reduced accuracy. Confound with token sentiment info?
-X_train = remove_feature('sentence_pos_or_neg', X_train)
-X_train = remove_feature('sentence_sentiment_score', X_train) 
-X_test = remove_feature('sentence_pos_or_neg', X_test)
-X_test = remove_feature('sentence_sentiment_score', X_test)
+# X_train = remove_feature('sentence_pos_or_neg', X_train)
+#X_train = remove_feature('sentence_sentiment_score', X_train)
+#X_test = remove_feature('sentence_pos_or_neg', X_test)
+#X_test = remove_feature('sentence_sentiment_score', X_test)
+
+#X_train = remove_feature('in_title', X_train)
+#X_test = remove_feature('in_title', X_test)
+
 
 # X_train = remove_feature('token', X_train)
 # X_test = remove_feature('token', X_test)
-# X_train = remove_feature('token_pos_or_neg', X_train)
+#X_train = remove_feature('token_pos_or_neg', X_train)
 # X_train = remove_feature('token_sentiment_score', X_train)
-# X_test = remove_feature('token_pos_or_neg', X_test)
+#X_test = remove_feature('token_pos_or_neg', X_test)
 # X_test = remove_feature('token_sentiment_score', X_test)
 
 # del X
@@ -130,14 +167,22 @@ X_test = remove_feature('sentence_sentiment_score', X_test)
 # all_spans = train_spans + test_spans
 # all_sent = X_train + X_test
 # all_y = y_train + y_test
+#one = []
+#y_one = []
+#one = X_test + one
+#y_one = y_test + y_one
+#two = X_test
+#three =
 
 crf = sklearn_crfsuite.CRF(
-    algorithm='lbfgs',
-    max_iterations=300,
+    algorithm='l2sgd',
+    max_iterations=1000,
+    all_possible_states=True,
     all_possible_transitions=True,
     verbose=True)
 
 crf.fit(X_train, y_train)
+
 labels = list(crf.classes_)
 y_pred = crf.predict(X_test)
 metrics.flat_f1_score(y_test, y_pred,
@@ -147,6 +192,7 @@ baseline = generate_baseline(y_pred)
 print(metrics.flat_classification_report(y_test, y_pred))
 print(metrics.flat_classification_report(y_test, baseline))
 
+X_train[0][0]
 
 
 
@@ -164,7 +210,7 @@ f1_scorer = make_scorer(metrics.flat_f1_score,
 
 # search
 rs = RandomizedSearchCV(crf, params_space,
-                        cv=3,
+                        cv=2,
                         verbose=1,
                         n_iter=50,
                         scoring=f1_scorer)
@@ -176,6 +222,8 @@ metrics.flat_f1_score(y_test, y_pred, average='weighted')
 metrics.flat_f1_score(y_test, baseline, average='weighted')
 metrics.flat_accuracy_score(y_test, y_pred)
 metrics.flat_recall_score(y_test, y_pred)
+print(metrics.flat_classification_report(y_test, y_pred))
+print(metrics.flat_classification_report(y_test, baseline))
 
 
 #

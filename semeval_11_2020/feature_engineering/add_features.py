@@ -1,11 +1,13 @@
 from nltk.corpus import stopwords
 from flair.models import TextClassifier
 from flair.data import Sentence
-# import gc
+import fasttext
+#import gc
 import glob
 import pickle
 # import flair
 
+FT_MOD = '/home/mpk3/Desktop/IR_Final/analytics/ft/models/wiki.en.bin'
 MAIN = '/home/mpk3/Natural_Language_Processing/semeval_11_2020'
 
 # Models
@@ -32,9 +34,9 @@ class Retagger:
     def __init__(self):
 
         # Models that dont get cleared
-        self.embedding_model = None
+        self.fasttext_model = None
         self.sentiment_model = None
-
+        
         # Stopwords
         self.stopword_set = None
 
@@ -118,6 +120,29 @@ class Retagger:
                 feature_map['next_tok'] =\
                     feature_map['next_tok'].lower()
 
+    def retag_4gram(self):
+        ''' Creates a 4-gram array out of sentences'''
+        for sentence in self.sentences:
+            i = 0
+            while (i < len(sentence)):
+                if i < 2:
+                    two_behind = 'SEN_START'
+                    pos_behind = 'SEN_START'
+                else:
+                    two_behind = sentence[i-2]['token']
+                    pos_behind = sentence[i-2]['pos']
+                if (len(sentence)-i-1) >= 2:
+                    two_in_front = sentence[i+2]['token']
+                    pos_in_front = sentence[i+2]['pos']
+                else:
+                    two_in_front = 'SEN_END'
+                    pos_in_front = 'SEN_END'
+                sentence[i]['prev_prev_tok'] = two_behind
+                sentence[i]['next_next_tok'] = two_in_front
+                sentence[i]['prev_prev_pos'] = pos_behind
+                sentence[i]['next_next_pos'] = pos_in_front
+                i = i + 1
+
     def retag_stop_words(self):
         '''Creates a stop word feature.
         Tokens should be lowercase before going through this
@@ -156,10 +181,32 @@ class Retagger:
                 sentence.append((pos_or_neg, score))
             self.token_level_sentiment.append(sentence)
 
-    def token_embeddings(self):
-        # if self.fasttext_model is None:
-        #    self.fasttext_model = fasttext.
-        return
+    def retag_title_feature(self):
+        '''The first line of every file is its title. This adds a feature
+        'in_title' that marks whether or not a token is in the title.
+        '''
+        title_set = set()
+        for feature_map in self.sentences[0]:
+            title_set.add(feature_map['token'])
+        for sentence in self.sentences[1:]:
+            for feature_map in sentence:
+                if feature_map['token'] in title_set:
+                    feature_map['in_title'] = 1
+                else:
+                    feature_map['in_title'] = 0
+
+    def retag_token_ft_embed(self):
+        '''Adds an embedding to the main token'''
+        if self.fasttext_model is None:
+            self.fasttext_model = fasttext.load_model(FT_MOD)
+        for sentence in self.sentences:
+            for feature_map in sentence:
+                vec =\
+                    self.fasttext_model[feature_map['token']]
+                i_tuples = list(enumerate(vec))
+                feature_map['token_embed'] =\
+                    {str(i): flt for (i, flt) in i_tuples}
+
 
     def retag_sentiment(self):
         ''' Adds the new features to the json objects in self.sentences
@@ -187,18 +234,48 @@ class Retagger:
 
 # Driver
 retag = Retagger()
-TRIAL = LAB_DATA + '/trial2/*'
-NEW_TRIAL = LAB_DATA + '/trial3/'
+TRIAL = LAB_DATA + '/trial4/*'
+NEW_TRIAL = LAB_DATA + '/trial6/'
 files = glob.glob(TRIAL)
-amount = files  # [files[0]]
+amount = files  # [files[0]]  # files
 for f_in in amount:
+    retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
+    retag.retag_title_feature()  # ; retag.sentences[0][0]
+    fout = NEW_TRIAL + retag.article_name + '_f.pickle'
+    retag.pickle_dump(retag.sentences, fout)
+    retag.clear()
+
+# 4-Gram + Fasttext
+'''
+4 gram information with fasttext embedding.
+Didnt improve performance much and greatly increased
+model complexity so working with large data sets became
+problematic
+
+for f_in in amount:
+    retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
+    retag.retag_token_ft_embed()  # ; retag.sentences[0][0]
+    fout = NEW_TRIAL + retag.article_name + '_f.pickle'
+    retag.pickle_dump(retag.sentences, fout)
+    retag.clear()
+    gc.collect()
+'''
+# 4 gram information
+'''for f_in in amount:
+    retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
+    retag.retag_4gram()  # ; retag.sentences[0][0]
+    fout = NEW_TRIAL + retag.article_name + '_f.pickle'
+    retag.pickle_dump(retag.sentences, fout)
+    retag.clear()'''
+
+# This was for adding case and stopword information
+'''for f_in in amount:
     retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
     retag.retag_case_features()  # ; retag.sentences[0][0]
     retag.retag_stop_words()  # ; retag.sentences[0][0]
     fout = NEW_TRIAL + retag.article_name + '_f.pickle'
     retag.pickle_dump(retag.sentences, fout)
-    retag.clear()
-
+    retag.clear()'''
 
 # This version was for sentiment analysis
 '''for f_in in amount:
@@ -206,9 +283,15 @@ for f_in in amount:
     # retag.sentence_sentiment_analysis()  # Holding off on this
     # retag.token_sentiment_analysis()
     # retag.retag_sentiment()
+
     fout = NEW_TRIAL + retag.article_name + '_f.pickle'
     # print(retag.article_name)
     retag.pickle_dump(retag.sentences, fout)
     retag.clear()
     # gc.collect()
 '''
+
+
+
+
+

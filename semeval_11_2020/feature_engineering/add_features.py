@@ -1,4 +1,5 @@
 from nltk.corpus import stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from flair.models import TextClassifier
 from flair.data import Sentence
 import fasttext
@@ -36,7 +37,8 @@ class Retagger:
         # Models that dont get cleared
         self.fasttext_model = None
         self.sentiment_model = None
-        
+        self.vader_model = None
+
         # Stopwords
         self.stopword_set = None
 
@@ -81,6 +83,25 @@ class Retagger:
             self.tokenized_sentences.append([feat_map['token']
                                              for feat_map in sentence])
 
+    def vader_both(self):
+        self.separate_tokens()
+        if self.vader_model is None:
+            self.vader_model = SentimentIntensityAnalyzer()
+        
+        # Get Sentence Level Sentiment 
+        i = 0
+        for token_sentence in self.tokenized_sentences:
+            sep = ' '
+            sentence_string = sep.join(token_sentence)
+            sentence_obj = self.vader_model.polarity_scores(sentence_string)
+            # Get Token level Sentiment
+            for feature_map in self.sentences[i]:
+                feature_map['vader_sentence'] = \
+                    sentence_obj
+                feature_map['vader_token'] = \
+                    self.vader_model.polarity_scores(feature_map['token'])
+            i = i + 1
+    
     def sentence_sentiment_analysis(self):
         '''Gets the sentiment of the entire sentence:
         Score : float score
@@ -119,6 +140,18 @@ class Retagger:
                     int(feature_map['next_tok'].islower())
                 feature_map['next_tok'] =\
                     feature_map['next_tok'].lower()
+
+                # Next Next Prev Prev
+                if 'next_next_tok' in feature_map.keys():
+                    feature_map['prev_prev_is_lower'] =\
+                        int(feature_map['prev_prev_tok'].islower())
+                    feature_map['prev_prev_tok'] =\
+                        feature_map['prev_prev_tok'].lower()
+                    
+                    feature_map['next_next_is_lower'] =\
+                        int(feature_map['next_next_tok'].islower())
+                    feature_map['next_next_tok'] =\
+                        feature_map['next_next_tok'].lower()
 
     def retag_4gram(self):
         ''' Creates a 4-gram array out of sentences'''
@@ -163,6 +196,13 @@ class Retagger:
                 # Next
                 feature_map['next_is_stop'] =\
                     int(feature_map['next_tok'] in self.stopword_set)
+
+                if 'next_next_tok' in feature_map.keys():
+                    feature_map['prev_prev_is_stop'] =\
+                        int(feature_map['prev_prev_tok'] in self.stopword_set)
+
+                    feature_map['next_next_is_stop'] =\
+                        int(feature_map['next_next_tok'] in self.stopword_set)
 
     def token_sentiment_analysis(self):
         '''Perform sentiment analysis on the tokenized sentences on
@@ -230,21 +270,56 @@ class Retagger:
             i = i + 1
 
 # Driver Test
+unigram =\
+    ['pos', 'token', 'span', 'article', 'main_is_stop', 'main_is_lower']
+trigram = unigram + \
+    ['prev_pos' + 'next_pos'] + \
+    ['prev_tok', 'next_tok', 'prev_pos', 'next_pos'] +\
+    ['prev_is_stop' + 'prev_is_lower' + 'next_is_stop' + 'next_is_lower']
+fourgram = trigram + \
+    [] + \
+    [] + \
 
-
+feature_sets
 # Driver
 retag = Retagger()
-TRIAL = LAB_DATA + '/trial4/*'
-NEW_TRIAL = LAB_DATA + '/trial6/'
+TRIAL = LAB_DATA + '/trial2/*'
+NEW_TRIAL = LAB_DATA + '/trial9/'
 files = glob.glob(TRIAL)
 amount = files  # [files[0]]  # files
+# Vader with text case before normalization
+for f_in in amount:
+    retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
+    retag.vader_both()  # ; retag.sentences[0][0]
+    retag.retag_4gram()
+    retag.retag_case_features()
+    retag.retag_stop_words()
+    fout = NEW_TRIAL + retag.article_name + '_f.pickle'
+    retag.pickle_dump(retag.sentences, fout)
+    retag.clear()
+
+# First Vader Trial
+'''
+TRIAL = LAB_DATA + '/trial4/*'
+NEW_TRIAL = LAB_DATA + '/trial7/'
+files = glob.glob(TRIAL)
+amount = files  # [files[0]]  # files
+for f_in in amount:
+    retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
+    retag.vader_both()  # ; retag.sentences[0][0]
+    fout = NEW_TRIAL + retag.article_name + '_f.pickle'
+    retag.pickle_dump(retag.sentences, fout)
+    retag.clear()
+'''
+# Title Features
+'''
 for f_in in amount:
     retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
     retag.retag_title_feature()  # ; retag.sentences[0][0]
     fout = NEW_TRIAL + retag.article_name + '_f.pickle'
     retag.pickle_dump(retag.sentences, fout)
     retag.clear()
-
+'''
 # 4-Gram + Fasttext
 '''
 4 gram information with fasttext embedding.
@@ -295,3 +370,15 @@ for f_in in amount:
 
 
 
+sid = SentimentIntensityAnalyzer()
+text = 'Death'
+scores = sid.polarity_scores(text)
+
+files = glob.glob(TRIAL)
+amount = files[0]
+retag = Retagger()
+retag.load_article_pickle(amount)  # ; retag.sentences[0][0]
+retag.vader_both()  ; retag.sentences[0][0]
+retag.retag_4gram(); retag.sentences[0][0]
+retag.retag_case_features(); retag.sentences[0][0]
+retag.retag_stop_words(); retag.sentences[0][0]

@@ -1,3 +1,4 @@
+import sys
 import scipy.stats
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
@@ -113,8 +114,113 @@ def competition_output(f_out, y_pred, test_spans, test_articles):
                 j = j + 1
             i = i + 1
 
+
+def test_function(feature_set, X):
+    '''Removes all features not in feature_set from X'''
+    keys = set(X[0][0].keys())
+    for key in keys:
+        if key not in feature_set:
+            X = remove_feature(key, X)
+    return X
+
+
+# Test Sets
+# N-Grams
+
+unigram =\
+    ['pos', 'token',  'main_is_stop', 'main_is_lower']
+trigram = unigram + \
+    ['prev_pos', 'next_pos'] +\
+    ['prev_tok', 'next_tok'] +\
+    ['prev_is_stop', 'next_is_stop'] +\
+    ['prev_is_lower',  'next_is_lower']
+fourgram = trigram +\
+    ['prev_prev_pos', 'next_next_pos'] +\
+    ['prev_prev_tok', 'next_next_tok'] +\
+    ['prev_prev_is_stop', 'next_next_is_stop'] +\
+    ['prev_prev_is_lower', 'next_next_is_lower']
+n_gram_trials = [unigram, trigram, fourgram]
+
+
+trials = n_gram_trials
+TRIAL = '/trial9/'
+fin = LAB_DAT + TRIAL + "*.pickle"
+files = glob.glob(fin)
+X = []
+Y = []
+
+for article in files:  # files_test:
+    sentences = pickle.load(open(article, "rb"))
+    sentences = sentences[1:]  # Removes title sentence
+    for X_i in sentences:
+        Y_i = [y.pop('class') for y in X_i]
+        X.append(X_i)
+        Y.append(Y_i)
+
+X[0][0]
+
+i = 0
+for trial_feature_list in trials:
+    test_feat_set = set(trial_feature_list)
+    Z = X
+    Z = test_function(test_feat_set, Z)
+
+    X_train, X_test, y_train, y_test = train_test_split(Z,
+                                                        Y,
+                                                        test_size=0.20,
+                                                        random_state=42)
+    crf = sklearn_crfsuite.CRF(
+        algorithm='arow',
+        max_iterations=100,
+        all_possible_states=True,
+        all_possible_transitions=True,
+        verbose=True)
+
+    set_f_out = str(i) + '_features.txt'
+    sys.stdout = open(set_f_out, "w")
+
+    print (Z[0][0].keys())
+    sys.stdout.close()
+    iterations = str(i) + '_iterations.txt'
+    sys.stdout = open(iterations, "w")
+    crf.fit(X_train, y_train)
+
+    labels = list(crf.classes_)
+    y_pred = crf.predict(X_test)
+    sys.stdout.close()
+
+    results = str(i) + '_results.txt'
+    sys.stdout = open(results, "w")
+    metrics.flat_f1_score(y_test, y_pred,
+                          average='weighted', labels=labels)
+    print(metrics.flat_classification_report(y_test, y_pred))
+    sys.stdout.close()
+    i = i + 1
+
+
+
+defx = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Trials
-TRIAL = '/trial6/'
+TRIAL = '/trial9/'
 fin = LAB_DAT + TRIAL + "*.pickle"
 
 files = glob.glob(fin)
@@ -131,52 +237,46 @@ for article in amount:  # files_test:
         #X_i = flatten_sent_embedding(X_i)
         X.append(X_i)
         Y.append(Y_i)
-X[0][0]
+        
 
 X_train, X_test, y_train, y_test = train_test_split(X,
                                                     Y,
                                                     test_size=0.20,
                                                     random_state=42)
+
+# Necessary; This information also is necessary for later scoring
 train_spans, X_train = separate_spans(X_train)
 test_spans, X_test = separate_spans(X_test)
-
 train_articles, X_train = separate_articles(X_train)
 test_articles, X_test = separate_articles(X_test)
 
 
-# These features actually reduced accuracy. Confound with token sentiment info?
-# X_train = remove_feature('sentence_pos_or_neg', X_train)
-#X_train = remove_feature('sentence_sentiment_score', X_train)
-#X_test = remove_feature('sentence_pos_or_neg', X_test)
-#X_test = remove_feature('sentence_sentiment_score', X_test)
+# Flair Sentiment Information Removal
+# Generally speaking sentiment was not important for this task so far
+# I used two separate models but generally didnt see any significant
+# performance increase. NLTK sentiment was left in the model
+X_train = remove_feature('sentence_pos_or_neg', X_train)
+X_train = remove_feature('sentence_sentiment_score', X_train)
+X_test = remove_feature('sentence_pos_or_neg', X_test)
+X_test = remove_feature('sentence_sentiment_score', X_test)
+X_train = remove_feature('token_pos_or_neg', X_train)
+X_train = remove_feature('token_sentiment_score', X_train)
+X_test = remove_feature('token_pos_or_neg', X_test)
+X_test = remove_feature('token_sentiment_score', X_test)
+# X_train = remove_feature('in_title', X_train)
+# X_test = remove_feature('in_title', X_test)
 
-#X_train = remove_feature('in_title', X_train)
-#X_test = remove_feature('in_title', X_test)
-
-
+X_train = remove_feature('vader_sentence', X_train)
+X_test = remove_feature('vader_sentence', X_test)
+X_train = remove_feature('vader_token', X_train)
+X_test = remove_feature('vader_token', X_test)
 # X_train = remove_feature('token', X_train)
 # X_test = remove_feature('token', X_test)
-#X_train = remove_feature('token_pos_or_neg', X_train)
-# X_train = remove_feature('token_sentiment_score', X_train)
-#X_test = remove_feature('token_pos_or_neg', X_test)
-# X_test = remove_feature('token_sentiment_score', X_test)
 
-# del X
-# del Y
-
-# all_spans = train_spans + test_spans
-# all_sent = X_train + X_test
-# all_y = y_train + y_test
-#one = []
-#y_one = []
-#one = X_test + one
-#y_one = y_test + y_one
-#two = X_test
-#three =
 
 crf = sklearn_crfsuite.CRF(
-    algorithm='l2sgd',
-    max_iterations=1000,
+    algorithm='ap',
+    max_iterations=100,
     all_possible_states=True,
     all_possible_transitions=True,
     verbose=True)

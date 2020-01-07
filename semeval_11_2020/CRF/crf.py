@@ -128,50 +128,54 @@ def test_function(feature_set, X):
 # N-Grams
 
 unigram =\
-    ['pos', 'token',  'main_is_stop', 'main_is_lower']
+    ['pos', 'token',  'main_is_stop', 'main_is_lower','vader_token']
 trigram = unigram + \
     ['prev_pos', 'next_pos'] +\
     ['prev_tok', 'next_tok'] +\
     ['prev_is_stop', 'next_is_stop'] +\
-    ['prev_is_lower',  'next_is_lower']
+    ['prev_is_lower',  'next_is_lower'] 
+
 fourgram = trigram +\
     ['prev_prev_pos', 'next_next_pos'] +\
     ['prev_prev_tok', 'next_next_tok'] +\
     ['prev_prev_is_stop', 'next_next_is_stop'] +\
     ['prev_prev_is_lower', 'next_next_is_lower']
-n_gram_trials = [unigram, trigram, fourgram]
+
+v0 = fourgram + ['vader_token']
+v1 = fourgram + ['vader_prev', 'vader_next']
+v2 = fourgram + ['vader_prev_prev', 'vader_next_next']
+
+n_gram_trials = [v0, v1, v2]
 
 
 trials = n_gram_trials
-TRIAL = '/trial9/'
+TRIAL = '/trial10/'
 fin = LAB_DAT + TRIAL + "*.pickle"
 files = glob.glob(fin)
-X = []
-Y = []
 
-for article in files:  # files_test:
-    sentences = pickle.load(open(article, "rb"))
-    sentences = sentences[1:]  # Removes title sentence
-    for X_i in sentences:
-        Y_i = [y.pop('class') for y in X_i]
-        X.append(X_i)
-        Y.append(Y_i)
-
-X[0][0]
 
 i = 0
 for trial_feature_list in trials:
-    test_feat_set = set(trial_feature_list)
-    Z = X
-    Z = test_function(test_feat_set, Z)
+    X = []
+    Y = []
 
+    for article in files:  # files_test:
+        sentences = pickle.load(open(article, "rb"))
+        sentences = sentences[1:]  # Removes title sentence
+        for X_i in sentences:
+            Y_i = [y.pop('class') for y in X_i]
+            X.append(X_i)
+            Y.append(Y_i)
+
+    test_feat_set = set(trial_feature_list)
+    Z = test_function(test_feat_set, X)
     X_train, X_test, y_train, y_test = train_test_split(Z,
                                                         Y,
                                                         test_size=0.20,
                                                         random_state=42)
     crf = sklearn_crfsuite.CRF(
-        algorithm='arow',
-        max_iterations=100,
+        algorithm='l2sgd',
+        max_iterations=1000,
         all_possible_states=True,
         all_possible_transitions=True,
         verbose=True)
@@ -201,6 +205,7 @@ for trial_feature_list in trials:
 
 defx = 0
 
+x= 0
 
 
 
@@ -275,7 +280,7 @@ X_test = remove_feature('vader_token', X_test)
 
 
 crf = sklearn_crfsuite.CRF(
-    algorithm='ap',
+    algorithm='pa',
     max_iterations=100,
     all_possible_states=True,
     all_possible_transitions=True,

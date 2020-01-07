@@ -96,12 +96,21 @@ class Retagger:
             sentence_obj = self.vader_model.polarity_scores(sentence_string)
             # Get Token level Sentiment
             for feature_map in self.sentences[i]:
+
                 feature_map['vader_sentence'] = \
                     sentence_obj
                 feature_map['vader_token'] = \
                     self.vader_model.polarity_scores(feature_map['token'])
+                feature_map['vader_prev'] =\
+                    self.vader_model.polarity_scores(feature_map['prev_tok'])
+                feature_map['vader_next'] =\
+                    self.vader_model.polarity_scores(feature_map['next_tok'])
+                feature_map['vader_prev_prev'] =\
+                    self.vader_model.polarity_scores(feature_map['prev_prev_tok'])
+                feature_map['vader_next_next'] =\
+                    self.vader_model.polarity_scores(feature_map['next_next_tok'])
             i = i + 1
-    
+
     def sentence_sentiment_analysis(self):
         '''Gets the sentiment of the entire sentence:
         Score : float score
@@ -270,28 +279,20 @@ class Retagger:
             i = i + 1
 
 # Driver Test
-unigram =\
-    ['pos', 'token', 'span', 'article', 'main_is_stop', 'main_is_lower']
-trigram = unigram + \
-    ['prev_pos' + 'next_pos'] + \
-    ['prev_tok', 'next_tok', 'prev_pos', 'next_pos'] +\
-    ['prev_is_stop' + 'prev_is_lower' + 'next_is_stop' + 'next_is_lower']
-fourgram = trigram + \
-    [] + \
-    [] + \
 
-feature_sets
+
+
 # Driver
 retag = Retagger()
 TRIAL = LAB_DATA + '/trial2/*'
-NEW_TRIAL = LAB_DATA + '/trial9/'
+NEW_TRIAL = LAB_DATA + '/trial10/'
 files = glob.glob(TRIAL)
 amount = files  # [files[0]]  # files
-# Vader with text case before normalization
+# Vader with text case before normalization VADER FOR ALL
 for f_in in amount:
     retag.load_article_pickle(f_in)  # ; retag.sentences[0][0]
-    retag.vader_both()  # ; retag.sentences[0][0]
     retag.retag_4gram()
+    retag.vader_both()  # ; retag.sentences[0][0]
     retag.retag_case_features()
     retag.retag_stop_words()
     fout = NEW_TRIAL + retag.article_name + '_f.pickle'

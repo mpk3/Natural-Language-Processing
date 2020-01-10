@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import glob
 import matplotlib.pyplot as plt
-
+import matplotlib.gridspec as gridspec
 # Matplot settings
 pd.options.display.mpl_style = 'default'
 
@@ -57,12 +57,35 @@ def build_result_df(files):
 
 def plot_results(results):
     '''Plots graphs for the results of each test set'''
-    
+    fig, ax = plt.subplots(3, 3)
+    ncol = 0
     for test in results:
+        nrow = 0
         for ind, obj in test.groupby('reference'):
-            t_str = 'Test Set: ' + str(ind)
             y_list = ['f1-score', 'precision', 'recall']
-            obj.plot.bar(x='opt', y=y_list, title=t_str)
+            ax1 = obj.plot.bar(x='opt', y=y_list, ax=ax[nrow, ncol])
+            ax1.set_xlabel('')
+            ax1.tick_params(axis='x',labelrotation=.25)
+            nrow = nrow + 1
+        ncol = ncol + 1
+
+    ax[0, 0].\
+        set_title('Testing Phase 1: No Sentiment', fontsize='x-small')
+    ax[0, 1].\
+        set_title('Testing Phase 2: Token Level Sentiment', fontsize='x-small')
+    ax[0, 2].\
+        set_title('Testing Phase 3: n-level Sentiment', fontsize='x-small')
+    ax[0, 0].set_ylabel('Unigram')
+    a1t = ax[0, 2].twinx()
+    a1t.set_ylabel('n sentiment')
+    ax[1, 0].set_ylabel('Trigram')
+    a2t = ax[1, 2].twinx()
+    a2t.set_ylabel('n-1, n+1 sentiment')
+    a3t = ax[2, 2].twinx()
+    a3t.set_ylabel('n-2, n+2 sentiment')
+    ax[2, 0].set_ylabel('5-gram')
+    fig.suptitle('Test Results by Test Phase')
+    plt.subplots_adjust(bottom=.05, top=.9)
     plt.show()
 
 
@@ -93,6 +116,51 @@ def build_iteration_df(files):
     return df
 
 
+def plot_training(training_dataframe):
+    fig, ax = plt.subplots(5, 3)
+    col = 0
+    s = ['Unigram', 'Trigram', '5-Gram']
+    s2 = ['n', 'n+1, n-1', 'n+2, n-2']
+    
+    for j, test in training_dataframe.groupby('Test'):
+        row = 0
+        for ind, obj in test.groupby('Opt'):
+            # print(ind)
+            for jind, jobj in obj.groupby('Reference'):
+                ax1 = jobj.plot(x='Iteration', y='Loss',
+                                ax=ax[row, col], loglog=True)
+                ax1.set_xlabel('Optimization Iteration - Log Scale', fontsize='x-small')
+                ax1.set_yticklabels([], minor=True)
+                ax1.set_yticklabels([])
+                ax1.set_yticks([], minor=True)
+                ax1.set_yticks([])
+                ax1.set_xticklabels([], minor=True)
+                ax1.set_xticklabels([])
+                ax1.set_xticks([], minor=True)
+                ax1.set_xticks([])
+                if col<=1:
+                    ax1.legend(s)
+                else:
+                    ax1.legend(s2)
+            row = row + 1
+        col = col + 1
+    ax[0,0].\
+        set_title('Testing Phase 1: No Sentiment', fontsize='x-small')
+    ax[0,1].\
+        set_title('Testing Phase 2: Token Level Sentiment', fontsize='x-small')
+    ax[0,2].\
+        set_title('Testing Phase 3: n-level Sentiment', fontsize='x-small')
+    ax[0,0].\
+        set_ylabel('ap')
+    ax[1,0].set_ylabel('arow')
+    ax[2,0].set_ylabel('l2sgd')
+    ax[3,0].set_ylabel('lbfgs')
+    ax[4,0].set_ylabel('pa')
+    fig.suptitle('Training Loss over Iterations by Test Phase and Algorithm (Log-Log Scale)')
+    plt.subplots_adjust(bottom=.05, top=.9)
+    plt.show()
+
+
 # Driver Code
 tfiles = glob.glob(TRAINING)
 rfiles = glob.glob(RESULTS)
@@ -101,58 +169,11 @@ rfiles = glob.glob(RESULTS)
 
 # TRAINING
 dft = build_iteration_df(tfiles)
-
-t1_df_lbfgs = dft[dft['Opt'] == 'lbfgs']
-t2_df_ap = dft[dft['Opt'] == 'ap']
-t3_df_l2sgd = dft[dft['Opt'] == 'l2sgd']
-t3_df_pa = dft[dft['Opt'] == 'pa']
-t3_df_arow = dft[dft['Opt'] == 'arow']
-
-all_iterations = [t1_df_lbfgs, t2_df_ap,
-                  t3_df_l2sgd, t3_df_pa, t3_df_arow]
-fig0, ax0 = plt.subplots()
-fig1, ax1 = plt.subplots()
-fig2, ax2 = plt.subplots()
-
-objs = []
-axs = [ax0, ax1, ax2]
-for opt in all_iterations:
-    for ind, obj in opt.groupby('Test'):
-        t_str = obj.iloc[0]['Test']
-        fig, ax = plt.subplots()
-        for jind, jobj in obj.groupby('Reference'):
-            r_str = jobj.iloc[0]['Reference']
-            ax = jobj.plot(ax=ax, x='Iteration', y='Loss', loglog=True,
-                           linestyle='dotted', linewidth=1.3,
-                           title='Test: ' + t_str + 'Ref: ' + str(r_str))
-
-plt.show()
-
-
-for ind, obj in all_iterations[0].groupby('Test'):
-    print(ind)
-    ax = obj.plot(ax=ax, kind='line',
-                  x='Iteration', y='Loss')
-    objs.append(obj)
-
-for ind, obj in objs[0].groupby('Test'):
-    ax = obj.plot(ax=ax, kind='line',
-                  x='Iteration', y='Loss')
-
-plt.show()
-
-t1_df_tl = t1_df_t.drop('Time', axis=1)
-t1_df_tl.groupby(['Reference']).groupby()
-
-.plot(x='Iteration', y='Loss')
-plt.show()
-
-
+plot_training(dft)
 
 # RESULTS
 # File I/O and Pandas DataFrame
 dfr = build_result_df(rfiles)
-
 
 # Trim DataFrames
 t1_dfr = dfr[dfr['test'] == 'test1'].drop('macro').drop('micro').\
@@ -164,36 +185,4 @@ t3_dfr = dfr[dfr['test'] == 'test3'].drop('macro').drop('micro').\
     drop('o').drop('weighted').drop('support', axis=1)
 
 all_results = [t1_dfr, t2_dfr, t3_dfr]
-
-
 plot_results(all_results)
-
-
-t1_dfr.plot.bar(x='reference', y='f1-score', subplots=True)
-plt.show(subplots=True)
-
-
-
-
-
-
-
-
-####### Stuff for Feature files not needed right now
-
-tests = {}
-
-file_in = ffiles[0]
-ext = file_in.split('/')
-test_number = ext[7]
-optimization = ext[8]
-reference_number = ext[-1][0]
-text_wrapper = open(file_in, 'r')
-lines = text_wrapper.readlines()
-features = set(eval(lines[0][9:].strip()))
-keys = tests[test_number].keys()
-#if test_number in keys:
-
-
-
-

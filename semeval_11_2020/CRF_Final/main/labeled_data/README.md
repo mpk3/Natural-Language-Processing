@@ -1,2 +1,0 @@
-### Labeled Data
-This repository holds of the labeled data (!) I created for sub task 1. all_tests/ holds the results of all of the tests as well as additional information. trial1/ & new/ are both empty directories that are used if you run any of the programs in the other directories. trial10/ and trial2/ hold datasets I already created. trial10/ is the final dataset and was used in test phase 3. Both trial10/ and trial2/ are also required if you run the crf model or add\_features.py

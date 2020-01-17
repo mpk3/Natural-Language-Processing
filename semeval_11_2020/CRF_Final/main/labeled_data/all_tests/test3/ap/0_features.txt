@@ -1,1 +1,0 @@
-dict_keys(['pos', 'token', 'prev_tok', 'next_tok', 'prev_pos', 'next_pos', 'prev_prev_tok', 'next_next_tok', 'prev_prev_pos', 'next_next_pos', 'vader_token', 'main_is_lower', 'prev_is_lower', 'next_is_lower', 'prev_prev_is_lower', 'next_next_is_lower', 'main_is_stop', 'prev_is_stop', 'next_is_stop', 'prev_prev_is_stop', 'next_next_is_stop'])

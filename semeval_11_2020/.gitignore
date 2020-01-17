@@ -1,3 +1,10 @@
+/provided/
+/results/
+/vis/
+/CRF/
+/feature_engineering/
+/models/
+/labeled_data
 /results/*
 /labeled_data/*
 /provided/*

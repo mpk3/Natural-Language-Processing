@@ -1,0 +1,128 @@
+
+Feature generation
+type: CRF1d
+feature.minfreq: 0.000000
+feature.possible_states: 1
+feature.possible_transitions: 1
+0....1....2....3....4....5....6....7....8....9....10
+Number of features: 126074
+Seconds required: 0.921
+
+Adaptive Regularization of Weights (AROW)
+variance: 1.000000
+gamma: 1.000000
+max_iterations: 100
+epsilon: 0.000000
+
+Iter 1   time=0.10  loss=86097.27 feature_norm=173.04
+Iter 2   time=0.09  loss=61133.23 feature_norm=217.66
+Iter 3   time=0.09  loss=48960.41 feature_norm=247.85
+Iter 4   time=0.08  loss=43115.33 feature_norm=267.50
+Iter 5   time=0.08  loss=38151.21 feature_norm=279.55
+Iter 6   time=0.08  loss=35150.60 feature_norm=289.86
+Iter 7   time=0.08  loss=31369.18 feature_norm=297.26
+Iter 8   time=0.07  loss=29918.73 feature_norm=303.24
+Iter 9   time=0.07  loss=27259.27 feature_norm=308.22
+Iter 10  time=0.07  loss=27195.13 feature_norm=312.64
+Iter 11  time=0.07  loss=24953.24 feature_norm=315.74
+Iter 12  time=0.07  loss=23944.83 feature_norm=317.90
+Iter 13  time=0.08  loss=23681.03 feature_norm=319.48
+Iter 14  time=0.07  loss=23309.07 feature_norm=321.16
+Iter 15  time=0.07  loss=21499.40 feature_norm=323.39
+Iter 16  time=0.07  loss=20961.10 feature_norm=324.34
+Iter 17  time=0.07  loss=20845.59 feature_norm=325.36
+Iter 18  time=0.07  loss=19724.28 feature_norm=326.26
+Iter 19  time=0.07  loss=19620.74 feature_norm=326.96
+Iter 20  time=0.07  loss=19016.23 feature_norm=327.45
+Iter 21  time=0.07  loss=19020.91 feature_norm=328.16
+Iter 22  time=0.07  loss=18087.78 feature_norm=328.90
+Iter 23  time=0.07  loss=17212.49 feature_norm=329.36
+Iter 24  time=0.07  loss=17486.25 feature_norm=329.60
+Iter 25  time=0.07  loss=17047.26 feature_norm=330.13
+Iter 26  time=0.07  loss=16506.81 feature_norm=330.51
+Iter 27  time=0.07  loss=16130.63 feature_norm=330.75
+Iter 28  time=0.07  loss=15187.83 feature_norm=331.03
+Iter 29  time=0.07  loss=15829.24 feature_norm=331.25
+Iter 30  time=0.07  loss=16248.97 feature_norm=331.61
+Iter 31  time=0.07  loss=15329.60 feature_norm=331.82
+Iter 32  time=0.07  loss=15377.13 feature_norm=331.98
+Iter 33  time=0.07  loss=14514.38 feature_norm=332.03
+Iter 34  time=0.07  loss=14912.63 feature_norm=332.26
+Iter 35  time=0.07  loss=14701.11 feature_norm=332.36
+Iter 36  time=0.07  loss=14582.52 feature_norm=332.48
+Iter 37  time=0.07  loss=14682.59 feature_norm=332.64
+Iter 38  time=0.07  loss=14092.13 feature_norm=332.92
+Iter 39  time=0.07  loss=13534.21 feature_norm=332.83
+Iter 40  time=0.07  loss=13755.94 feature_norm=332.91
+Iter 41  time=0.07  loss=13977.47 feature_norm=333.10
+Iter 42  time=0.07  loss=13787.60 feature_norm=333.31
+Iter 43  time=0.07  loss=13559.09 feature_norm=333.35
+Iter 44  time=0.07  loss=13146.07 feature_norm=333.31
+Iter 45  time=0.07  loss=13591.81 feature_norm=333.52
+Iter 46  time=0.07  loss=13354.88 feature_norm=333.58
+Iter 47  time=0.07  loss=12961.43 feature_norm=333.59
+Iter 48  time=0.07  loss=13025.58 feature_norm=333.67
+Iter 49  time=0.07  loss=13379.97 feature_norm=333.88
+Iter 50  time=0.07  loss=12446.48 feature_norm=333.91
+Iter 51  time=0.07  loss=12710.65 feature_norm=333.97
+Iter 52  time=0.07  loss=12172.43 feature_norm=334.01
+Iter 53  time=0.07  loss=12559.95 feature_norm=334.05
+Iter 54  time=0.07  loss=12829.41 feature_norm=334.17
+Iter 55  time=0.07  loss=12990.30 feature_norm=334.33
+Iter 56  time=0.07  loss=13077.26 feature_norm=334.36
+Iter 57  time=0.07  loss=12283.40 feature_norm=334.34
+Iter 58  time=0.07  loss=12562.39 feature_norm=334.40
+Iter 59  time=0.07  loss=12703.47 feature_norm=334.50
+Iter 60  time=0.07  loss=12319.43 feature_norm=334.53
+Iter 61  time=0.06  loss=11874.74 feature_norm=334.60
+Iter 62  time=0.07  loss=12245.08 feature_norm=334.67
+Iter 63  time=0.07  loss=11140.29 feature_norm=334.80
+Iter 64  time=0.06  loss=11837.31 feature_norm=334.81
+Iter 65  time=0.07  loss=11697.54 feature_norm=334.89
+Iter 66  time=0.07  loss=12012.63 feature_norm=334.89
+Iter 67  time=0.07  loss=12099.80 feature_norm=334.94
+Iter 68  time=0.07  loss=11882.21 feature_norm=334.91
+Iter 69  time=0.07  loss=11964.44 feature_norm=334.96
+Iter 70  time=0.06  loss=11907.09 feature_norm=334.95
+Iter 71  time=0.07  loss=11822.73 feature_norm=334.90
+Iter 72  time=0.06  loss=11500.77 feature_norm=334.98
+Iter 73  time=0.06  loss=11766.91 feature_norm=334.97
+Iter 74  time=0.06  loss=11880.41 feature_norm=335.00
+Iter 75  time=0.06  loss=11325.59 feature_norm=334.99
+Iter 76  time=0.07  loss=11808.74 feature_norm=335.07
+Iter 77  time=0.07  loss=11631.95 feature_norm=335.05
+Iter 78  time=0.07  loss=11320.45 feature_norm=335.00
+Iter 79  time=0.07  loss=11283.49 feature_norm=335.01
+Iter 80  time=0.06  loss=11443.43 feature_norm=335.03
+Iter 81  time=0.06  loss=10837.90 feature_norm=335.00
+Iter 82  time=0.07  loss=10849.49 feature_norm=335.02
+Iter 83  time=0.06  loss=11059.62 feature_norm=335.02
+Iter 84  time=0.06  loss=10982.10 feature_norm=335.02
+Iter 85  time=0.06  loss=10655.67 feature_norm=335.02
+Iter 86  time=0.06  loss=10669.62 feature_norm=335.05
+Iter 87  time=0.06  loss=10684.68 feature_norm=335.07
+Iter 88  time=0.06  loss=10696.65 feature_norm=335.09
+Iter 89  time=0.06  loss=10787.58 feature_norm=335.08
+Iter 90  time=0.06  loss=11258.77 feature_norm=335.05
+Iter 91  time=0.07  loss=11328.49 feature_norm=335.08
+Iter 92  time=0.07  loss=10845.89 feature_norm=335.07
+Iter 93  time=0.06  loss=10794.00 feature_norm=335.05
+Iter 94  time=0.07  loss=10961.35 feature_norm=335.06
+Iter 95  time=0.06  loss=10907.33 feature_norm=335.03
+Iter 96  time=0.07  loss=11396.27 feature_norm=335.07
+Iter 97  time=0.06  loss=11136.59 feature_norm=335.12
+Iter 98  time=0.06  loss=10573.64 feature_norm=335.10
+Iter 99  time=0.06  loss=10312.00 feature_norm=335.08
+Iter 100 time=0.06  loss=10191.44 feature_norm=335.07
+Total seconds required for training: 6.777
+
+Storing the model
+Number of active features: 73540 (126074)
+Number of active attributes: 36768 (63035)
+Number of active labels: 2 (2)
+Writing labels
+Writing attributes
+Writing feature references for transitions
+Writing feature references for attributes
+Seconds required: 0.027
+

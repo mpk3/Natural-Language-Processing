@@ -1,0 +1,168 @@
+
+Feature generation
+type: CRF1d
+feature.minfreq: 0.000000
+feature.possible_states: 1
+feature.possible_transitions: 1
+0....1....2....3....4....5....6....7....8....9....10
+Number of features: 206348
+Seconds required: 2.467
+
+Stochastic Gradient Descent (SGD)
+c2: 1.000000
+max_iterations: 1000
+period: 10
+delta: 0.000001
+
+Calibrating the learning rate (eta)
+calibration.eta: 0.100000
+calibration.rate: 2.000000
+calibration.samples: 1000
+calibration.candidates: 10
+calibration.max_trials: 20
+Initial loss: 16376.988435
+Trial #1 (eta = 0.100000): 67924.852100 (worse)
+Trial #2 (eta = 0.050000): 33990.279923 (worse)
+Trial #3 (eta = 0.025000): 17641.725246 (worse)
+Trial #4 (eta = 0.012500): 9379.072898
+Trial #5 (eta = 0.006250): 5606.203652
+Trial #6 (eta = 0.003125): 4163.104835
+Trial #7 (eta = 0.001563): 4080.804577
+Trial #8 (eta = 0.000781): 4786.963563
+Trial #9 (eta = 0.000391): 5831.116274
+Trial #10 (eta = 0.000195): 6881.506241
+Trial #11 (eta = 0.000098): 7818.899639
+Trial #12 (eta = 0.000049): 8836.581535
+Trial #13 (eta = 0.000024): 10195.778167
+Best learning rate (eta): 0.001563
+Seconds required: 0.196
+
+Iter 1   time=0.18  loss=39472.28
+Iter 2   time=0.18  loss=35556.75
+Iter 3   time=0.18  loss=35039.02
+Iter 4   time=0.18  loss=33872.46
+Iter 5   time=0.18  loss=34665.50
+Iter 6   time=0.18  loss=33567.96
+Iter 7   time=0.18  loss=33094.50
+Iter 8   time=0.18  loss=32720.81
+Iter 9   time=0.18  loss=31656.50
+Iter 10  time=0.18  loss=31160.97
+Iter 11  time=0.18  loss=31616.62
+Iter 12  time=0.18  loss=30814.43
+Iter 13  time=0.18  loss=30911.29
+Iter 14  time=0.18  loss=30430.78
+Iter 15  time=0.18  loss=30094.11
+Iter 16  time=0.18  loss=30563.63
+Iter 17  time=0.18  loss=29792.89
+Iter 18  time=0.18  loss=29405.71
+Iter 19  time=0.18  loss=28980.35
+Iter 20  time=0.18  loss=28687.74
+Iter 21  time=0.18  loss=28498.67
+Iter 22  time=0.18  loss=28183.96
+Iter 23  time=0.18  loss=28516.20
+Iter 24  time=0.18  loss=28266.05
+Iter 25  time=0.18  loss=28090.69
+Iter 26  time=0.18  loss=27965.04
+Iter 27  time=0.18  loss=27220.21
+Iter 28  time=0.18  loss=27467.96
+Iter 29  time=0.18  loss=27082.23
+Iter 30  time=0.18  loss=27061.99
+Iter 31  time=0.18  loss=26882.64
+Iter 32  time=0.18  loss=27091.02
+Iter 33  time=0.18  loss=26401.00
+Iter 34  time=0.18  loss=26549.77
+Iter 35  time=0.18  loss=26723.85
+Iter 36  time=0.18  loss=26599.53
+Iter 37  time=0.18  loss=26066.49
+Iter 38  time=0.18  loss=26969.25
+Iter 39  time=0.18  loss=26327.40
+Iter 40  time=0.18  loss=25673.88
+Iter 41  time=0.18  loss=25762.79
+Iter 42  time=0.18  loss=25523.31
+Iter 43  time=0.18  loss=25904.00
+Iter 44  time=0.18  loss=25486.83
+Iter 45  time=0.18  loss=25110.13
+Iter 46  time=0.18  loss=25234.30
+Iter 47  time=0.18  loss=25333.82
+Iter 48  time=0.18  loss=25430.95
+Iter 49  time=0.18  loss=24626.42
+Iter 50  time=0.18  loss=24809.80
+Iter 51  time=0.18  loss=24750.78
+Iter 52  time=0.18  loss=24632.98
+Iter 53  time=0.18  loss=24490.12
+Iter 54  time=0.18  loss=24476.51
+Iter 55  time=0.18  loss=24405.24
+Iter 56  time=0.18  loss=24092.52
+Iter 57  time=0.18  loss=24152.62
+Iter 58  time=0.18  loss=23863.54
+Iter 59  time=0.18  loss=24464.39
+Iter 60  time=0.18  loss=24258.47
+Iter 61  time=0.18  loss=24001.79
+Iter 62  time=0.18  loss=23965.49
+Iter 63  time=0.18  loss=23888.74
+Iter 64  time=0.18  loss=24057.56
+Iter 65  time=0.18  loss=23815.73
+Iter 66  time=0.18  loss=23671.85
+Iter 67  time=0.18  loss=23395.36
+Iter 68  time=0.18  loss=23280.61
+Iter 69  time=0.18  loss=23499.63
+Iter 70  time=0.18  loss=23443.48
+Iter 71  time=0.18  loss=23296.12
+Iter 72  time=0.18  loss=23139.56
+Iter 73  time=0.18  loss=23342.58
+Iter 74  time=0.18  loss=22876.89
+Iter 75  time=0.18  loss=22963.19
+Iter 76  time=0.18  loss=22841.69
+Iter 77  time=0.18  loss=22979.75
+Iter 78  time=0.18  loss=22987.17
+Iter 79  time=0.18  loss=22561.23
+Iter 80  time=0.18  loss=22587.88
+Iter 81  time=0.18  loss=22414.62
+Iter 82  time=0.18  loss=22550.73
+Iter 83  time=0.18  loss=22459.68
+Iter 84  time=0.18  loss=22262.83
+Iter 85  time=0.18  loss=22430.74
+Iter 86  time=0.18  loss=22494.33
+Iter 87  time=0.18  loss=22458.04
+Iter 88  time=0.18  loss=22377.60
+Iter 89  time=0.18  loss=22474.60
+Iter 90  time=0.18  loss=22202.71
+Iter 91  time=0.18  loss=21920.15
+Iter 92  time=0.18  loss=21996.85
+Iter 93  time=0.18  loss=21935.32
+Iter 94  time=0.18  loss=21843.24
+Iter 95  time=0.18  loss=21910.45
+Iter 96  time=0.18  loss=21825.54
+Iter 97  time=0.18  loss=21858.62
+Iter 98  time=0.18  loss=21855.75
+Iter 99  time=0.18  loss=22012.16
+Iter 100 time=0.18  loss=21879.42
+Iter 101 time=0.18  loss=21567.19
+Iter 102 time=0.18  loss=21460.59
+Iter 103 time=0.18  loss=21234.17
+Iter 104 time=0.18  loss=21484.48
+Iter 105 time=0.18  loss=21435.86
+Iter 106 time=0.18  loss=21248.84
+Iter 107 time=0.18  loss=21277.99
+Iter 108 time=0.18  loss=21191.57
+Iter 109 time=0.18  loss=21335.40
+Iter 110 time=0.18  loss=21023.75
+Iter 111 time=0.18  loss=21309.40
+Iter 112 time=0.18  loss=21059.62
+Iter 113 time=0.18  loss=20974.14
+Iter 114 time=0.18  loss=20996.10
+Iter 115 time=0.18  loss=21524.64
+SGD terminated with the stopping criteria
+Loss: 20974.139180
+Total seconds required for training: 20.550
+
+Storing the model
+Number of active features: 206348 (206348)
+Number of active attributes: 103172 (103175)
+Number of active labels: 2 (2)
+Writing labels
+Writing attributes
+Writing feature references for transitions
+Writing feature references for attributes
+Seconds required: 0.075
+

@@ -1,0 +1,1 @@
+dict_keys(['pos', 'token', 'vader_token', 'main_is_lower', 'main_is_stop'])

@@ -1,0 +1,130 @@
+
+Feature generation
+type: CRF1d
+feature.minfreq: 0.000000
+feature.possible_states: 1
+feature.possible_transitions: 1
+0....1....2....3....4....5....6....7....8....9....10
+Number of features: 206360
+Seconds required: 3.044
+
+Passive Aggressive
+type: 1
+c: 1.000000
+error_sensitive: 1
+averaging: 1
+max_iterations: 100
+epsilon: 0.000000
+
+Iter 1   time=0.23  loss=45494.36 feature_norm=3.97
+Iter 2   time=0.23  loss=43179.80 feature_norm=5.91
+Iter 3   time=0.22  loss=40950.05 feature_norm=7.53
+Iter 4   time=0.22  loss=39767.74 feature_norm=9.00
+Iter 5   time=0.21  loss=38403.74 feature_norm=10.22
+Iter 6   time=0.21  loss=37297.20 feature_norm=11.38
+Iter 7   time=0.21  loss=37316.30 feature_norm=12.41
+Iter 8   time=0.21  loss=36384.38 feature_norm=13.41
+Iter 9   time=0.21  loss=34418.33 feature_norm=14.35
+Iter 10  time=0.21  loss=34525.28 feature_norm=15.21
+Iter 11  time=0.21  loss=33983.68 feature_norm=16.03
+Iter 12  time=0.21  loss=33791.79 feature_norm=16.80
+Iter 13  time=0.20  loss=32865.46 feature_norm=17.53
+Iter 14  time=0.21  loss=32817.20 feature_norm=18.24
+Iter 15  time=0.20  loss=31840.98 feature_norm=18.92
+Iter 16  time=0.20  loss=31112.60 feature_norm=19.58
+Iter 17  time=0.20  loss=30865.14 feature_norm=20.20
+Iter 18  time=0.20  loss=30123.49 feature_norm=20.83
+Iter 19  time=0.20  loss=30176.05 feature_norm=21.42
+Iter 20  time=0.20  loss=30203.26 feature_norm=21.98
+Iter 21  time=0.20  loss=29872.18 feature_norm=22.53
+Iter 22  time=0.20  loss=29362.84 feature_norm=23.06
+Iter 23  time=0.20  loss=29218.50 feature_norm=23.56
+Iter 24  time=0.20  loss=28714.61 feature_norm=24.07
+Iter 25  time=0.19  loss=28049.43 feature_norm=24.56
+Iter 26  time=0.20  loss=28135.12 feature_norm=25.05
+Iter 27  time=0.20  loss=28444.85 feature_norm=25.53
+Iter 28  time=0.19  loss=27632.50 feature_norm=25.98
+Iter 29  time=0.19  loss=27567.73 feature_norm=26.42
+Iter 30  time=0.19  loss=27565.51 feature_norm=26.85
+Iter 31  time=0.19  loss=27321.47 feature_norm=27.27
+Iter 32  time=0.19  loss=27064.92 feature_norm=27.69
+Iter 33  time=0.19  loss=26708.68 feature_norm=28.12
+Iter 34  time=0.19  loss=26394.85 feature_norm=28.53
+Iter 35  time=0.19  loss=27165.34 feature_norm=28.92
+Iter 36  time=0.19  loss=26208.28 feature_norm=29.31
+Iter 37  time=0.19  loss=26390.21 feature_norm=29.71
+Iter 38  time=0.19  loss=26265.63 feature_norm=30.10
+Iter 39  time=0.19  loss=25839.52 feature_norm=30.49
+Iter 40  time=0.19  loss=25970.04 feature_norm=30.85
+Iter 41  time=0.19  loss=25602.39 feature_norm=31.22
+Iter 42  time=0.19  loss=25299.70 feature_norm=31.57
+Iter 43  time=0.19  loss=24801.94 feature_norm=31.92
+Iter 44  time=0.19  loss=25287.68 feature_norm=32.29
+Iter 45  time=0.19  loss=25577.43 feature_norm=32.64
+Iter 46  time=0.19  loss=24839.04 feature_norm=32.97
+Iter 47  time=0.19  loss=25019.02 feature_norm=33.31
+Iter 48  time=0.19  loss=24811.61 feature_norm=33.64
+Iter 49  time=0.19  loss=24521.47 feature_norm=33.97
+Iter 50  time=0.18  loss=24115.39 feature_norm=34.30
+Iter 51  time=0.18  loss=24180.22 feature_norm=34.61
+Iter 52  time=0.18  loss=24626.10 feature_norm=34.92
+Iter 53  time=0.18  loss=23661.44 feature_norm=35.23
+Iter 54  time=0.18  loss=23330.84 feature_norm=35.53
+Iter 55  time=0.18  loss=23737.28 feature_norm=35.85
+Iter 56  time=0.18  loss=23281.45 feature_norm=36.13
+Iter 57  time=0.18  loss=23296.11 feature_norm=36.43
+Iter 58  time=0.18  loss=23458.86 feature_norm=36.72
+Iter 59  time=0.18  loss=23398.29 feature_norm=37.02
+Iter 60  time=0.18  loss=23202.39 feature_norm=37.31
+Iter 61  time=0.18  loss=22818.52 feature_norm=37.59
+Iter 62  time=0.18  loss=22819.99 feature_norm=37.87
+Iter 63  time=0.18  loss=22930.35 feature_norm=38.13
+Iter 64  time=0.18  loss=22805.04 feature_norm=38.41
+Iter 65  time=0.18  loss=22920.64 feature_norm=38.68
+Iter 66  time=0.18  loss=22791.02 feature_norm=38.95
+Iter 67  time=0.18  loss=22756.55 feature_norm=39.23
+Iter 68  time=0.18  loss=22896.12 feature_norm=39.48
+Iter 69  time=0.18  loss=22574.09 feature_norm=39.74
+Iter 70  time=0.18  loss=22459.30 feature_norm=40.00
+Iter 71  time=0.18  loss=22098.39 feature_norm=40.27
+Iter 72  time=0.18  loss=22476.47 feature_norm=40.52
+Iter 73  time=0.18  loss=22255.93 feature_norm=40.77
+Iter 74  time=0.18  loss=21627.59 feature_norm=41.02
+Iter 75  time=0.18  loss=22544.57 feature_norm=41.27
+Iter 76  time=0.18  loss=21758.70 feature_norm=41.51
+Iter 77  time=0.18  loss=22122.61 feature_norm=41.75
+Iter 78  time=0.18  loss=21730.19 feature_norm=41.99
+Iter 79  time=0.18  loss=22035.81 feature_norm=42.24
+Iter 80  time=0.18  loss=21491.04 feature_norm=42.47
+Iter 81  time=0.18  loss=21693.99 feature_norm=42.71
+Iter 82  time=0.17  loss=21522.97 feature_norm=42.93
+Iter 83  time=0.18  loss=21170.39 feature_norm=43.16
+Iter 84  time=0.18  loss=21340.31 feature_norm=43.39
+Iter 85  time=0.17  loss=21375.50 feature_norm=43.62
+Iter 86  time=0.18  loss=21254.18 feature_norm=43.85
+Iter 87  time=0.18  loss=21113.92 feature_norm=44.08
+Iter 88  time=0.17  loss=20989.50 feature_norm=44.30
+Iter 89  time=0.18  loss=20600.71 feature_norm=44.53
+Iter 90  time=0.17  loss=20915.08 feature_norm=44.75
+Iter 91  time=0.17  loss=20928.71 feature_norm=44.96
+Iter 92  time=0.17  loss=20787.94 feature_norm=45.18
+Iter 93  time=0.17  loss=20708.61 feature_norm=45.40
+Iter 94  time=0.17  loss=20425.60 feature_norm=45.61
+Iter 95  time=0.17  loss=20272.80 feature_norm=45.83
+Iter 96  time=0.17  loss=20398.68 feature_norm=46.04
+Iter 97  time=0.17  loss=20329.61 feature_norm=46.25
+Iter 98  time=0.17  loss=20345.18 feature_norm=46.47
+Iter 99  time=0.17  loss=20169.04 feature_norm=46.68
+Iter 100 time=0.17  loss=20016.59 feature_norm=46.88
+Total seconds required for training: 18.862
+
+Storing the model
+Number of active features: 202492 (206360)
+Number of active attributes: 101244 (103183)
+Number of active labels: 2 (2)
+Writing labels
+Writing attributes
+Writing feature references for transitions
+Writing feature references for attributes
+Seconds required: 0.072
+

@@ -1,0 +1,12 @@
+import pickle
+import glob
+
+FILES_IN = ''
+
+class Cleaner():
+    def __init__ (self):
+        self.data = None
+    def load_data(self, FILES_IN):
+        '''Loading all the sentences for inspection and basic encoding.
+        This also strips stuff from the earlier formats I built'''
+        files = glob.glob(FILES_IN)

@@ -49,62 +49,69 @@ tok_sent, labels, vocab_set, label_set = preprocess_data(data)
 # Encoding
 encoder = tfds.features.text.TokenTextEncoder(vocab_set)
 label_encoder = tfds.features.text.TokenTextEncoder(label_set)
+
 encoded_sentences = [encoder.encode(' '.join(sent))
                      for sent in tok_sent]
 encoded_labels = [label_encoder.encode(' '.join(sent))
                   for sent in labels]
 
-r_s = tf.ragged.constant(encoded_sentences)
-r_l = tf.ragged.constant(encoded_labels)
-
-# Padding
-padded_sentences = tf.keras.preprocessing.\
-    sequence.pad_sequences(encoded_sentences,
-                           padding='post',
-                           maxlen=100)
-padded_labels = tf.keras.preprocessing.\
-    sequence.pad_sequences(encoded_labels,
-                           padding='post')
 
 # W/O Padding
+# r_s = tf.ragged.constant(encoded_sentences)
+# r_l = tf.ragged.constant(encoded_labels)
 
-dataset = tf.data.Dataset.from_tensor_slices((r_s,
-                                              r_l))
+# dataset = tf.data.Dataset.from_tensors((r_s, r_l))
+# dataset = dataset.padded_batch(100)
 
-dataset = dataset.shuffle(5000)
-dataset = dataset.padded_batch(100,
-                               tf.compat.v1.data.get_output_shapes(dataset))
+# Padding
+train_padded_sentences = tf.keras.preprocessing.\
+    sequence.pad_sequences(encoded_sentences[0:13000],
+                           padding='post',
+                           maxlen=100)
+train_padded_labels = tf.keras.preprocessing.\
+    sequence.pad_sequences(encoded_labels[0:13000],
+                           padding='post',
+                           maxlen=100)
 
+test_padded_sentences = tf.keras.preprocessing.\
+    sequence.pad_sequences(encoded_sentences[13000:],
+                           padding='post',
+                           maxlen=100)
+test_padded_labels = tf.keras.preprocessing.\
+    sequence.pad_sequences(encoded_labels[13000:],
+                           padding='post',
+                           maxlen=100)
 
+train_data = tf.data.Dataset.from_tensors((train_padded_sentences,
+                                           train_padded_labels))
+test_data = tf.data.Dataset.from_tensors((test_padded_sentences,
+                                          test_padded_labels))
 
-dataset = tf.data.Dataset.from_tensor_slices((padded_sentences,
-                                              padded_labels))
+train_batches = train_data
+test_batches = test_data
 
-dataset = dataset.batch(5000)
-
-train = dataset.skip(2000)
-test = dataset.take(2000)
-
-train = train
-test = test
-embedding = layers.Embedding(input_dim=(len(vocab_set)+2),
-                             output_dim=16, mask_zero=True)
-
-masked_output = embedding(train)
-
-model = tf.keras.Sequential()
-model.add(embedding)
-model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64)))
-
-for units in [64, 64]:
-  model.add(tf.keras.layers.Dense(units, activation='relu'))
-
-# Output layer. The first argument is the number of labels.
-model.add(tf.keras.layers.Dense(3, activation='softmax'))
+model = tf.keras.Sequential([
+  layers.Embedding(encoder.vocab_size, 16),
+  layers.GlobalAveragePooling1D(),
+  layers.Dense(16, activation='relu'),
+  layers.Dense(100, activation='sigmoid')
+])
 
 model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
+              loss='binary_crossentropy',
               metrics=['accuracy'])
+
+history = model.fit(
+    train_batches,
+    epochs=1,
+    validation_data=test_batches, validation_steps=1)
+
+
+
+
+
+
+
 
 
 

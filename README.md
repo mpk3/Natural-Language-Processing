@@ -4,3 +4,5 @@ This is repo for finished NLP related projects to be displayed in. Not everythin
 ## List of Projects 
 * semeval\_11_2020: SEMEVAL 2020 Task 11
   Detecting propaganda techniques in news articles
+* pdf2database
+  Local ETL pipeline to deal with academic papers I regularly download

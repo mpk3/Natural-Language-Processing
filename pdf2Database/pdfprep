@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SOURCE_DIR= /your/download/directory/*.pdf
+DEST_DIR= /temp/directory/
+
+# Moves pdfs to temporary storage directory
+mv $SOURCE_DIR $DEST_DIR
+cd $DEST_DIR
+
+# Deletes files if they are duplicates
+
+# Duplicates are recognized by the numerals
+# appended at the end of filenames
+for file in *.pdf; do
+    rm -v $(basename "$file" .pdf)\ \(*\).pdf;
+done
+
+# I specifically want to remove duplicates that
+# are created when I accidentally download a file twice
+# There are other ways to do this using fdupes or md5sum
+# but this is simpilar and doesnt require downloading fdupes
+
+
+

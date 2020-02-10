@@ -1,4 +1,0 @@
-import pickle
-
-ALL_FILES_IN = ''
-data = pickle.load(open(ALL_FILES_IN, 'rb'))

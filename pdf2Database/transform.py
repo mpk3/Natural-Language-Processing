@@ -88,13 +88,19 @@ class pdf_transform:
         Creating the document matrix is by far the longest process in
         transformation. So this cuts that time down.
         '''
-        t = time.time()
-        f_out = 'pdf_matrix_' + str(t) + '.pickle'
-        pickle.dump(self.text_matrix, open(f_out, 'wb'))
+        if len(self.text_matrix) is 0:
+            print('Text matrix is empty')
+        else:
+            t = time.time()
+            f_out = 'pdf_matrix_' + str(t) + '.pickle'
+            pickle.dump(self.text_matrix, open(f_out, 'wb'))
 
     def load_matrix(self, f_in):
         '''Loads previously pickled text matrix'''
-        self.text_matrix = pickle.load(open(f_in, 'rb'))
+        try:
+            self.text_matrix = pickle.load(open(f_in, 'rb'))
+        except Exception as ex:
+            print('Error loading matrix\n' + str(ex))
 
     def clear(self):
         '''Resets pdf_text to an empty list'''
@@ -140,6 +146,7 @@ class pdf_transform:
 
         except Exception as ex:
             self.error_files.append((file_in, str(ex)))
+            print('Error loading: ' + file_in)
 
     def add_to_matrix(self):
         '''
@@ -148,8 +155,11 @@ class pdf_transform:
 
         This is used in transform_all_docs after each document is transformed
         '''
-        self.text_matrix.append(self.pdf_text)
-        self.clear()
+        if len(self.pdf_text) is 0:
+            print('No documents in pdf_text')
+        else:
+            self.text_matrix.append(self.pdf_text)
+            self.clear()
 
     def load_all_docs(self, pdf_files):
         '''
@@ -176,15 +186,18 @@ class pdf_transform:
         If you already have built the database and are just trying to
         label new documents then use load_model()
         '''
+        if len(self.text_matrix) is 0:
+            print('No documents in text matrix')
+        else:
+            docs = [TaggedDocument(doc, [i]) for i, doc
+                    in enumerate(self.text_matrix)]
+            model = Doc2Vec(docs, vector_size=50, window=2,
+                            min_count=1, workers=3)
 
-        docs = [TaggedDocument(doc, [i]) for i, doc
-                in enumerate(self.text_matrix)]
-        model = Doc2Vec(docs, vector_size=50, window=2, min_count=1, workers=3)
-
-        t = time.time()
-        f_out = 'd2vM_' + str(t) + '.bin'
-        model.save(f_out)
-        self.d2v_model = model
+            t = time.time()
+            f_out = 'd2vM_' + str(t) + '.bin'
+            model.save(f_out)
+            self.d2v_model = model
 
     def load_d2vec_model(self, f_in):
         '''
@@ -195,13 +208,18 @@ class pdf_transform:
         f_in : str
         file location of binary gensim doc2vec model
         '''
-
-        self.d2v_model = Doc2Vec.load(f_in)
+        try:
+            self.d2v_model = Doc2Vec.load(f_in)
+        except Exception as ex:
+            print('Error loading Doc2Vec model\n' + str(ex))
 
     def vectorize_documents(self):
         '''Transforms document into 50-D vector'''
-        self.vec_matrix = [self.d2v_model.infer_vector(doc) for doc in
-                           self.text_matrix]
+        if self.d2v_model is None:
+            print('No doc2vec model loaded')
+        else:
+            self.vec_matrix = [self.d2v_model.infer_vector(doc) for doc in
+                               self.text_matrix]
 
     def build_sc_model(self):
         '''Builds an initial Spectral Clustering model'''
@@ -213,11 +231,46 @@ class pdf_transform:
         f_out = 'scM_' + str(t) + '.pickle'
         pickle.dump(sc, open(f_out, 'wb'))
 
-    def load_sc(self, f_in):
-        '''Load a premade Spectral Clustering model'''
-        self.sc_model = pickle.load(open(f_in, 'rb'))
+    def load_sc(self, cluster_model):
+        '''Load a premade Spectral Clustering model
 
-    def transform(
+        Parameters:
+        -----------
+        cluster_model : bin
+        Previously created sci-kit learn clustering model
+        '''
+        try:
+            self.sc_model = pickle.load(open(f_in, 'rb'))
+        except Exception as ex:
+            print('Problem loading clustering model\n' + str(ex))
+
+    def transform(self):
+        '''Applies both doc2vec model and '''
+        return
+
+    def full_transform(self, files, d2v_model, cluster_model):
+        '''Does a full transformation on the list of files passed to it
+        This should be the main function used when transforming files
+        after the initial models have been created.
+
+        Parameters:
+        -----------
+        files : str
+        File location of the directory where all of the pdf files are 
+        located in the form /directory/
+        Uses glob to gather all the pdf files so extensions are not
+        required
+
+        d2v_model : bin
+        doc2vec binary model
+
+        cluster_model : bin
+        sci-kit learn cluster model
+        currently a spectral cluster model but this will probably be
+        generalized as I play around with different models
+        '''
+        return
+
 transformer = pdf_transform()
 #transformer.load_all_docs(PDFS)
 #transformer.build_doc2vec_model()

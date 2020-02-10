@@ -6,10 +6,15 @@ import glob
 import numpy as np
 import pandas as pd
 
-FILES_IN = '/home/mpk3/Natural_Language_Processing/semeval_11_2020/labeled_data/trial2/*'
+FILES_IN = '/home/mpk3/Natural_Language_Processing/' +\
+    'semeval_11_2020/labeled_data/trial2/*'
 
 
 class Cleaner():
+    '''Class for cleaning and removing old formatting from CRF
+    The rnn itself has something similar to this. This class however
+    is also used to establish some basic metrics about the dataset'''
+
     def __init__(self):
         self.data = []
 
@@ -29,7 +34,7 @@ class Cleaner():
             for j, word in enumerate(sentence):
                 self.data[i][j] = (word['token'], word['class'],
                                    word['span'], word['article'])
-                
+ 
 
 c = Cleaner()
 c.load_data(FILES_IN)
@@ -41,8 +46,10 @@ df = pd.DataFrame(lengths)
 fig, ax = plt.subplots()
 df.plot(ax=ax)
 xs = np.linspace(1, 21, len(df))
-ax.axhline(y=df.median().iloc[0], xmin=0, xmax=len(xs), color='r', linestyle='--', lw=2)
-ax.axhline(y=df.mean().iloc[0], xmin=0, xmax=len(xs), color='r', linestyle='--', lw=2)
+ax.axhline(y=df.median().iloc[0], xmin=0, xmax=len(xs),
+           color='r', linestyle='--', lw=2)
+ax.axhline(y=df.mean().iloc[0], xmin=0, xmax=len(xs),
+           color='r', linestyle='--', lw=2)
 plt.show()
 
 

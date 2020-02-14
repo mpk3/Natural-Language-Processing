@@ -6,7 +6,7 @@ import time
 import string
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from sklearn.cluster import SpectralClustering
-
+from sklearn.decomposition import PCA
 
 
 PDF_DIR = './temp/'
@@ -54,6 +54,19 @@ class pdf_transform:
         text_matrix : list[list[str]]
         list of all of the pdf_text lists that are collected when processing
         multiple pdfs
+        
+        titles : list[str]
+        List of pdf titles that are being transformed. This is used to label
+        pdfs after they have been transformed to retrieve their corresponding
+        titles by its index
+
+        vector_matrix : list[list[float]]
+        list of list of floating points corresponding to the vectorized
+        version of each pdf. The result of doc2vec transformation
+        
+        transformed_matrix : list [(str, int)]
+        list of document names and there corresponding category
+        Final result which will be used to create a database of the pdfs
 
         d2v_model : Doc2Vec
         Initialized by build_doc2vec_model() or load_d2vec_model()
@@ -64,14 +77,16 @@ class pdf_transform:
         self.pdf_text = []
         self.model = spacy.load("en_core_web_sm")
         self.d2v_model = None
-        self.sc_model = None
+        self.cluster_model = None
 
         # Lists
-        self.books = []
+        self.books = [] 
         self.empties = []
         self.error_files = []
+        self.titles = []
         self.text_matrix = []
         self.vector_matrix = []
+        self.transformed_matrix = []
 
         # Stopwords
         self.stopwords = self.model.Defaults.stop_words
@@ -143,6 +158,7 @@ class pdf_transform:
                     for token in doc:
                         if token not in self.stopwords:
                             self.pdf_text.append(token.lemma_)
+                self.titles.append(file_in)
 
         except Exception as ex:
             self.error_files.append((file_in, str(ex)))
@@ -173,7 +189,8 @@ class pdf_transform:
         '''
         for f_in in pdf_files:
             self.load_doc(f_in)
-            self.add_to_matrix()
+            if len(self.text_matrix) is not 0:
+                self.add_to_matrix()
 
     def build_doc2vec_model(self):
         '''
@@ -187,7 +204,7 @@ class pdf_transform:
         label new documents then use load_model()
         '''
         if len(self.text_matrix) is 0:
-            print('No documents in text matrix')
+            print('No documents in text matrix - Ignore')
         else:
             docs = [TaggedDocument(doc, [i]) for i, doc
                     in enumerate(self.text_matrix)]
@@ -218,20 +235,36 @@ class pdf_transform:
         if self.d2v_model is None:
             print('No doc2vec model loaded')
         else:
-            self.vec_matrix = [self.d2v_model.infer_vector(doc) for doc in
+            self.vector_matrix = [self.d2v_model.infer_vector(doc) for doc in
                                self.text_matrix]
+
+    def build_pca_model(self):
+        '''Builds an initial PCA model'''
+        pca = PCA(n_components=10)
+        try:
+            pca.fit(self.vector_matrix)
+            self.cluster_model = pca
+        except Exception as ex:
+            print('Problem creating pca model\n' + str(ex))
+        t = time.time()
+        f_out = 'pcaM_' + str(t) + '.pickle'
+        pickle.dump(pca, open(f_out, 'wb'))
 
     def build_sc_model(self):
         '''Builds an initial Spectral Clustering model'''
         sc = SpectralClustering(n_clusters=10, random_state=42)
-        sc.fit(self.vec_matrix)
-        self.sc_model = sc
+        try:
+            sc.fit(self.vector_matrix)
+            self.cluster_model = sc
+        except Exception as ex:
+            print('Problem creating Spectral Clustering Model\n' +
+                  str(ex))
 
         t = time.time()
         f_out = 'scM_' + str(t) + '.pickle'
         pickle.dump(sc, open(f_out, 'wb'))
 
-    def load_sc(self, cluster_model):
+    def load_model(self, cluster_model):
         '''Load a premade Spectral Clustering model
 
         Parameters:
@@ -240,13 +273,23 @@ class pdf_transform:
         Previously created sci-kit learn clustering model
         '''
         try:
-            self.sc_model = pickle.load(open(f_in, 'rb'))
+            self.cluster_model = pickle.load(open(cluster_model, 'rb'))
         except Exception as ex:
             print('Problem loading clustering model\n' + str(ex))
 
     def transform(self):
-        '''Applies both doc2vec model and '''
-        return
+        '''Applies clustering to each vector in vector_matrix and
+        creates a list of (pdf_name, integer) that corresponds to them
+        category assigned to the document by the clustering model
+        '''
+        try:
+            transformed_matrix = cluster_model.transform(vector_matrix)
+            self.transformed_matrix = zip(
+                [(self.titles[i], self.cluster_model.transform(doc))
+                 for i, doc in enumerate(self.vector_matrix)]
+
+        except Exception as ex:
+            print('Error in transform\n' + str(ex))
 
     def full_transform(self, files, d2v_model, cluster_model):
         '''Does a full transformation on the list of files passed to it
@@ -271,11 +314,20 @@ class pdf_transform:
         '''
         return
 
-transformer = pdf_transform()
-#transformer.load_all_docs(PDFS)
-#transformer.build_doc2vec_model()
 
-transformer.load_matrix('matrix')
-transformer.load_d2vec_model('d2vM_1581277695.6772249.bin')
+# Create new models
+transformer = pdf_transform()
+transformer.load_all_docs(PDFS)
+transformer.build_doc2vec_model()
 transformer.vectorize_documents()
-transformer.build_sc_model()
+transformer.build_pca_model()
+transformer.transform()
+
+
+transformer = pdf_transform()
+transformer.load_matrix('models/matrix')
+transformer.load_d2vec_model('models/d2vM_1581277695.6772249.bin')
+transformer.vectorize_documents()
+# transformer.build_sc_model()
+transformer.build_pca_model()
+transformer.transform()

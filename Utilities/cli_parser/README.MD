@@ -2,6 +2,8 @@
 - Often at work or while working on other projects I need to parse random sentences to get a feel for what types of linguistic phenomenon are going on 
 - Despite being a linguist I often find myself second-guessing my judgements
 - This commandline script offers two functions that help to alleviate this problem.
+  - --cli which parses and displays the input sentence in the terminal
+  - --display which parses and displays a dependency graph courtesy of spaCy's ![displaCy module](https://spacy.io/usage/visualizers)
 
 ```
 python parse.py -h

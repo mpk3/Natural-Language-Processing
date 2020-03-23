@@ -29,7 +29,12 @@ if args.cli:
                       .format(token.text, token.lemma_, token.pos_, token.tag_,
                               token.dep_, token.shape_, token.is_stop))
 elif args.display:
-            if sentence == 'display':
-                spacy.displacy.serve(doc, style="dep", page=True)
+    sentence = input()
+    if sentence == 'quit':
+        exit()
+    else:
+        doc = nlp(sentence)
+        spacy.displacy.serve(doc, style="dep", page=True)
+
 else:
     print('Requires option flag\nPython parse.py --help for options ')

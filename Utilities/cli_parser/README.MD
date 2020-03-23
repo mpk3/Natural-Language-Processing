@@ -8,7 +8,7 @@ python parse.py -h
 usage: parse.py [-h] [-c] [-d]
 
 optional arguments:
-  -h, --help     show this help message and exit\n
+  -h, --help     show this help message and exit
   -c, --cli      Command line string parser; 'quit' to exit; 'display' for
                  dependency graph
   -d, --display  Display dependency graph; 'C-c C-c' to exit

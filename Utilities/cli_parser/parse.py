@@ -4,8 +4,6 @@ import spacy
 import argparse
 import pickle
 import re
-# import gensim.downloader as api
-
 
 ##### Command Line Arguments #####
 parser = argparse.ArgumentParser()
@@ -58,23 +56,20 @@ if args.cli:  # Parse
         sentence = input()
         if re.search("[\u4e00-\u9FFF]", sentence):
             mandarin_parse(sentence)
-        elif sentence == 'quit' or 'q':
+        elif sentence in('quit', 'q'):
+            print('Exit')
             break
         elif sentence == 'display':
             spacy.displacy.serve(doc, style="dep", page=True)
         else:
             doc = nlp(sentence)
             for token in doc:
-                print(
-                    "Token:{0:10s} Lemma:{1:10s} \
-                    POS:{2:6s} Tag:{3:6s} \
-                    Dep:{4:6s} Shape:{5:6s} \
-                    Stop:{6:6s}"
-                    .format(
+                print("Token:{0:10s} Lemma:{1:10s} POS:{2:6s}\
+                Tag:{3:6s} Dep:{4:6s} Shape:{5:6s} Stop:{6:6s}".format(
                         token.text, token.lemma_,
                         token.pos_, token.tag_,
                         token.dep_, token.shape_,
-                        token.is_stop))
+                        str(token.is_stop)))
 elif args.display:  # Displacy
     sentence = input()
     if re.search("[\u4e00-\u9FFF]", sentence):

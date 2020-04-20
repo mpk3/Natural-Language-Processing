@@ -1,10 +1,8 @@
 # NLP 
-This is repo for finished NLP related projects to be displayed in. Not everything is visible.
+Repository for Natural Language Processing related projects. Not all projects are currently visible.
 
 ## List of Projects 
-* semeval\_11_2020: SEMEVAL 2020 Task 11
+* *Semeval\_11_2020: SEMEVAL 2020 Task 11*
   Detecting propaganda techniques in news articles
-* pdf2database
-  Local ETL pipeline for academic articles
-* Utilities
+* *Utilities*
   NLP specific command Line scripts 

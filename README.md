@@ -6,3 +6,5 @@ Repository for Natural Language Processing related projects. Not all projects ar
   Detecting propaganda techniques in news articles
 * *Utilities*
   NLP specific command Line scripts 
+*  *pdf2database*
+  Local ETL process for clustering pdfs
